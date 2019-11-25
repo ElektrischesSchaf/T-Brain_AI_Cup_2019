@@ -1,6 +1,6 @@
 /aicup2019_venv
 /.vscode
-/glove
+glove/
 /task1/*.pkl
 /task1/*.ini
 /.ipynb_checkpoints
