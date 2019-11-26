@@ -24,6 +24,8 @@ from tqdm import tqdm_notebook as tqdm
 from tqdm import trange
 
 from gensim.parsing import remove_stopwords
+import time
+tStart=time.time()
 
 import os
 
@@ -711,3 +713,5 @@ SubmitGenerator(prediction,
 
 
 #get_ipython().run_line_magic('tensorboard', '--logdir=task1/test_experiment')
+tEnd=time.time()
+print('Overall processing time: '+ str ( round( (tEnd-tStart)/60 , 3) )+' minutes' )
