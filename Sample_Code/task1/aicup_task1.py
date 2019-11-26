@@ -704,10 +704,10 @@ SubmitGenerator(prediction,
 # In[ ]:
 
 
-get_ipython().run_line_magic('load_ext', 'tensorboard')
+#get_ipython().run_line_magic('load_ext', 'tensorboard')
 
 
 # In[ ]:
 
 
-get_ipython().run_line_magic('tensorboard', '--logdir=task1/test_experiment')
+#get_ipython().run_line_magic('tensorboard', '--logdir=task1/test_experiment')
