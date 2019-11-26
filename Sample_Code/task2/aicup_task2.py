@@ -22,6 +22,8 @@ from sklearn.model_selection import train_test_split
 from tqdm import tqdm_notebook as tqdm
 #from tqdm import tqdm
 from tqdm import trange
+import time
+tStart=time.time()
 
 import os
 
@@ -638,9 +640,7 @@ SubmitGenerator(prediction,
                 os.path.join(CWD,'data/task2_sample_submission.csv'),
                 True, 
                 os.path.join(CWD,'task2_submission_1112.csv'))
+#get_ipython().run_line_magic('load_ext', 'tensorboard')
 
-
-# In[ ]:
-
-
-get_ipython().run_line_magic('load_ext', 'tensorboard')
+tEnd=time.time()
+print('Overall processing time: '+ str ( round( (tEnd-tStart)/60 , 3) )+' minutes' )
