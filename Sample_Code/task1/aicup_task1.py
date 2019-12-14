@@ -534,6 +534,11 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.embedding_size = embedding_dim # 100
         self.hidden_dim = hidden_dim # 512
+        '''
+        接着就是word embedding的定义nn.Embedding(2, 5)，这里的2表示有2个词，5表示5维，
+        其实也就是一个2×5的矩阵，所以如果你有1000个词，每个词希望是100维，
+        你就可以这样建立一个word embedding，nn.Embedding(1000, 100)。
+        '''
         self.embedding = nn.Embedding(vocabulary_size, self.embedding_size)  # vocabulary_size=lenght of word_dict, embedding_size=100
         self.embedding.weight = torch.nn.Parameter(embedding_matrix) # shape of embedding_matrix=(lenght of word_dict, embedding_size)
         self.sent_rnn = nn.GRU(self.embedding_size,
@@ -552,14 +557,12 @@ class Net(nn.Module):
     # w: number of words
     # e: embedding_dim
     def forward(self, x):
-        x = self.embedding(x)
-        print('x shape = ', x.shape, '\n')
-        print('x type = ', type(x), '\n')
-        b,s,w,e = x.shape
+        x = self.embedding(x) # type of x = <class 'torch.Tensor'>
+        b, s, w, e = x.shape
         x = x.view(b, s*w, e)
         x, __ = self.sent_rnn(x)
-        x = x.view(b,s,w,-1)
-        x = torch.max(x,dim=2)[0]
+        x = x.view(b, s, w, -1)
+        x = torch.max(x, dim=2)[0]
         #final_ht = x[-1]
         
         #x = self.layernorm1(x)
