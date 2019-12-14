@@ -1,0 +1,4 @@
+.data/
+.vector_cache/
+__pycache__/
+models/__pycache__/
