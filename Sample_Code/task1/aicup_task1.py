@@ -493,6 +493,9 @@ class AbstractDataset(Dataset):
                 pad_label.extend([[0]*6]*(max_sent-len(pad_label)))
                 
                 batch_label.append(pad_label)
+
+        print('len of batch_abstract', len(batch_abstract), '\n')
+        print('len of batch_label', len(batch_label), '\n')
         return torch.LongTensor(batch_abstract), torch.FloatTensor(batch_label), sent_len
 
 
