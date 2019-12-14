@@ -477,14 +477,16 @@ class AbstractDataset(Dataset):
                 if len(sentence) > max_len:
                     pad_abstract.append(sentence[:max_len])
                 else:
-                    pad_abstract.append(sentence+[self.pad_idx]*(max_len-len(sentence)))
+                    pad_abstract.append(  sentence+[self.pad_idx]*( max_len-len(sentence) )  )
             sent_len.append(len(pad_abstract))
             pad_abstract.extend([[self.pad_idx]*max_len]*(max_sent-len(pad_abstract)))            
             batch_abstract.append(pad_abstract)
+            '''
             print('len fo sentence', len(sentence), '\n') 
             print('len of pad_abstract', len(pad_abstract), '\n')
             print('len of batch_abstract', len(batch_abstract), '\n')
             print('-'*30)
+            '''
             # gather labels
             if 'Label' in data:
                 pad_label = data['Label']
@@ -506,6 +508,10 @@ trainData = AbstractDataset(train, PAD_TOKEN, max_len = 64)
 trainData = AbstractDataset(train, PAD_TOKEN, max_len = 64)
 validData = AbstractDataset(valid, PAD_TOKEN, max_len = 64)
 testData = AbstractDataset(test, PAD_TOKEN, max_len = 64)
+
+print('type of trainData', type(trainData), '\n')
+print('type of validData', type(validData), '\n')
+print('type of testData', type(testData), '\n')
 
 
 # In[ ]:
