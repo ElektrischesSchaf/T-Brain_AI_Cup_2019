@@ -496,6 +496,8 @@ class AbstractDataset(Dataset):
 
         print('len of batch_abstract', len(batch_abstract), '\n')
         print('len of batch_label', len(batch_label), '\n')
+        print('len of sent_len', len(sent_len), '\n')
+        print('sent_len[2]=', sent_len[2], '\n' )
         return torch.LongTensor(batch_abstract), torch.FloatTensor(batch_label), sent_len
 
 
