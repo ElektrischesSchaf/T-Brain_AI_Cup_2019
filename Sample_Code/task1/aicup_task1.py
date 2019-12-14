@@ -318,7 +318,7 @@ for word, i in word_dict.items():
     embedding_vector = embeddings_index.get(word)
     if embedding_vector is not None:
         embedding_matrix[i] = embedding_vector
-        # shape of embedding_matrix = (34966, 100)
+        # shape of embedding_matrix = (34966, 100) 
 
 
 # In[ ]:
@@ -493,11 +493,12 @@ class AbstractDataset(Dataset):
                 pad_label.extend([[0]*6]*(max_sent-len(pad_label)))
                 
                 batch_label.append(pad_label)
-
-        print('len of batch_abstract', len(batch_abstract), '\n')
-        print('len of batch_label', len(batch_label), '\n')
-        print('len of sent_len', len(sent_len), '\n')
-        print('sent_len[2]=', sent_len[2], '\n' )
+        '''
+        print('len of batch_abstract', len(batch_abstract), '\n') # 16
+        print('len of batch_label', len(batch_label), '\n') # 16
+        print('len of sent_len', len(sent_len), '\n') # 16
+        print('sent_len[2]=', sent_len[2], '\n' ) # lenght of sentence number 2 in this batch
+        '''
         return torch.LongTensor(batch_abstract), torch.FloatTensor(batch_label), sent_len
 
 
@@ -529,12 +530,12 @@ trainData
 
 
 class Net(nn.Module):
-    def __init__(self, vocabulary_size):
+    def __init__(self, vocabulary_size): # vocabulary_size is the lenght of word_dict
         super(Net, self).__init__()
-        self.embedding_size = embedding_dim
-        self.hidden_dim = hidden_dim
-        self.embedding = nn.Embedding(vocabulary_size, self.embedding_size)
-        self.embedding.weight = torch.nn.Parameter(embedding_matrix)
+        self.embedding_size = embedding_dim # 100
+        self.hidden_dim = hidden_dim # 512
+        self.embedding = nn.Embedding(vocabulary_size, self.embedding_size)  # vocabulary_size=lenght of word_dict, embedding_size=100
+        self.embedding.weight = torch.nn.Parameter(embedding_matrix) # shape of embedding_matrix=(lenght of word_dict, embedding_size)
         self.sent_rnn = nn.GRU(self.embedding_size,
                                 self.hidden_dim,
                                 bidirectional=True,
@@ -552,8 +553,10 @@ class Net(nn.Module):
     # e: embedding_dim
     def forward(self, x):
         x = self.embedding(x)
+        print('x shape = ', x.shape, '\n')
+        print('x type = ', type(x), '\n')
         b,s,w,e = x.shape
-        x = x.view(b,s*w,e)
+        x = x.view(b, s*w, e)
         x, __ = self.sent_rnn(x)
         x = x.view(b,s,w,-1)
         x = torch.max(x,dim=2)[0]
