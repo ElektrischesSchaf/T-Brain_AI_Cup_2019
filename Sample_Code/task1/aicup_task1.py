@@ -178,38 +178,37 @@ def collect_words(data_path, n_workers=4):
         words = set(sum(chunks.get(), []))
         
     return words
-
-print(words)
-'''
-{'scrambling',
- 'fitbit',
- 'x-y',
- 'usv',
- 'feeds',
- 'ganglia',
- 'reconciling',
- 'hack',
- 'multi-modality',
- 'physics',
- 'compartment',
- 'pre-publication',
- 'sensitivity-based',
- 'hindex',
- 'lpi',
- 'astor4android',
- 'downstream',
- 'representation/estimation',
- 'pull-in',
- '10^60',
- 'proof-program',
- 'cross-checking',
- 'sub-block',
- 'multi-player',
- 'wsns',
- 'uncommon',
- 'un-normalized',
- ...
-'''
+    '''
+    print(words)
+    {'scrambling',
+    'fitbit',
+    'x-y',
+    'usv',
+    'feeds',
+    'ganglia',
+    'reconciling',
+    'hack',
+    'multi-modality',
+    'physics',
+    'compartment',
+    'pre-publication',
+    'sensitivity-based',
+    'hindex',
+    'lpi',
+    'astor4android',
+    'downstream',
+    'representation/estimation',
+    'pull-in',
+    '10^60',
+    'proof-program',
+    'cross-checking',
+    'sub-block',
+    'multi-player',
+    'wsns',
+    'uncommon',
+    'un-normalized',
+    ...
+    '''
 
 
 # In[ ]:
@@ -225,40 +224,41 @@ words |= collect_words(os.path.join(CWD,'data/trainset.csv'))
 PAD_TOKEN = 0
 UNK_TOKEN = 1
 word_dict = {'<pad>':PAD_TOKEN,'<unk>':UNK_TOKEN}
+
 for word in words:
     word_dict[word]=len(word_dict) # len(word_dict)= 34966
 
-'''
-print(len(word_dict))
-i = 0
-for item in word_dict.items():
-    if i > 20:
-        break
-    print(item)
-    i = i + 1
+    '''
+    print(len(word_dict))
+    i = 0
+    for item in word_dict.items():
+        if i > 20:
+            break
+        print(item)
+        i = i + 1
 
-('<pad>', 0)
-('<unk>', 1)
-('scrambling', 2)
-('fitbit', 3)
-('x-y', 4)
-('usv', 5)
-('feeds', 6)
-('ganglia', 7)
-('reconciling', 😎
-('hack', 9)
-('multi-modality', 10)
-('physics', 11)
-('compartment', 12)
-('pre-publication', 13)
-('sensitivity-based', 14)
-('hindex', 15)
-('lpi', 16)
-('astor4android', 17)
-('downstream', 18)
-('representation/estimation', 19)
-('pull-in', 20)
-'''
+    ('<pad>', 0)
+    ('<unk>', 1)
+    ('scrambling', 2)
+    ('fitbit', 3)
+    ('x-y', 4)
+    ('usv', 5)
+    ('feeds', 6)
+    ('ganglia', 7)
+    ('reconciling', 😎
+    ('hack', 9)
+    ('multi-modality', 10)
+    ('physics', 11)
+    ('compartment', 12)
+    ('pre-publication', 13)
+    ('sensitivity-based', 14)
+    ('hindex', 15)
+    ('lpi', 16)
+    ('astor4android', 17)
+    ('downstream', 18)
+    ('representation/estimation', 19)
+    ('pull-in', 20)
+    '''
 
 # In[ ]:
 
