@@ -116,7 +116,7 @@ for i in range(len(dataset['Abstract'])):
 
 # In[ ]:
 
-
+# Three columns, Id, Abstract(lower case), Task1 
 dataset.head()
 
 
@@ -165,6 +165,7 @@ def collect_words(data_path, n_workers=4):
         # remove $$$ and append to sent_list
         sent_list += i[1]['Abstract'].split('$$$')
 
+    # Put all list in the same chunk
     chunks = [
         ' '.join(sent_list[i:i + len(sent_list) // n_workers])
         for i in range(0, len(sent_list), len(sent_list) // n_workers)
@@ -172,9 +173,43 @@ def collect_words(data_path, n_workers=4):
     with Pool(n_workers) as pool:
         # word_tokenize for word-word separation
         chunks = pool.map_async(word_tokenize, chunks)
-        words = set(sum(chunks.get(), []))
 
+        # extract words
+        words = set(sum(chunks.get(), []))
+        
     return words
+
+print(words)
+'''
+{'scrambling',
+ 'fitbit',
+ 'x-y',
+ 'usv',
+ 'feeds',
+ 'ganglia',
+ 'reconciling',
+ 'hack',
+ 'multi-modality',
+ 'physics',
+ 'compartment',
+ 'pre-publication',
+ 'sensitivity-based',
+ 'hindex',
+ 'lpi',
+ 'astor4android',
+ 'downstream',
+ 'representation/estimation',
+ 'pull-in',
+ '10^60',
+ 'proof-program',
+ 'cross-checking',
+ 'sub-block',
+ 'multi-player',
+ 'wsns',
+ 'uncommon',
+ 'un-normalized',
+ ...
+'''
 
 
 # In[ ]:
@@ -191,8 +226,39 @@ PAD_TOKEN = 0
 UNK_TOKEN = 1
 word_dict = {'<pad>':PAD_TOKEN,'<unk>':UNK_TOKEN}
 for word in words:
-    word_dict[word]=len(word_dict)
+    word_dict[word]=len(word_dict) # len(word_dict)= 34966
 
+'''
+print(len(word_dict))
+i = 0
+for item in word_dict.items():
+    if i > 20:
+        break
+    print(item)
+    i = i + 1
+
+('<pad>', 0)
+('<unk>', 1)
+('scrambling', 2)
+('fitbit', 3)
+('x-y', 4)
+('usv', 5)
+('feeds', 6)
+('ganglia', 7)
+('reconciling', 😎
+('hack', 9)
+('multi-modality', 10)
+('physics', 11)
+('compartment', 12)
+('pre-publication', 13)
+('sensitivity-based', 14)
+('hindex', 15)
+('lpi', 16)
+('astor4android', 17)
+('downstream', 18)
+('representation/estimation', 19)
+('pull-in', 20)
+'''
 
 # In[ ]:
 
@@ -233,8 +299,8 @@ embeddings_index = {}
 f = open(wordvector_path)
 for line in f:
     values = line.split()
-    word = values[0]
-    coefs = np.asarray(values[1:], dtype='float32')
+    word = values[0] # glove 檔案中的 每個 vocabulary
+    coefs = np.asarray(values[1:], dtype='float32') # glove 中的vector
     embeddings_index[word] = coefs
 f.close()
 print('Found %s word vectors.' % len(embeddings_index))
@@ -246,12 +312,13 @@ print('Found %s word vectors.' % len(embeddings_index))
 ### Preparing the GloVe word-embeddings matrix
 
 max_words = len(word_dict)
-embedding_matrix = np.zeros((max_words, embedding_dim))
+embedding_matrix = np.zeros((max_words, embedding_dim)) # embedding_dim=100
 for word, i in word_dict.items():
     #if i < max_words:
     embedding_vector = embeddings_index.get(word)
     if embedding_vector is not None:
         embedding_matrix[i] = embedding_vector
+        # shape of embedding_matrix = (34966, 100)
 
 
 # In[ ]:
@@ -299,7 +366,7 @@ def sentence_to_indices(sentence, word_dict):
         indices (list of int): List of word indices.
     """
     return [word_dict.get(word,UNK_TOKEN) for word in word_tokenize(sentence)]
-    
+
 def get_dataset(data_path, word_dict, n_workers=4):
     """ Load data and return dataset for training and validating.
 
@@ -318,7 +385,8 @@ def get_dataset(data_path, word_dict, n_workers=4):
                 batch_end = (len(dataset) // n_workers) * (i + 1)
             
             batch = dataset[batch_start: batch_end]
-            results[i] = pool.apply_async(preprocess_samples, args=(batch,word_dict))
+            results[i] = pool.apply_async(preprocess_samples, args=(batch, word_dict))
+            # results[i]：Abstact 內的每個word轉成word_dict的index, label 轉成 on hot vector
 
         pool.close()
         pool.join()
