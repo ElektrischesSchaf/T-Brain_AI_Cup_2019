@@ -481,6 +481,7 @@ class AbstractDataset(Dataset):
             sent_len.append(len(pad_abstract))
             pad_abstract.extend([[self.pad_idx]*max_len]*(max_sent-len(pad_abstract)))
             batch_abstract.append(pad_abstract)
+            print('batch_abstract = ', batch_abstract)
             # gather labels
             if 'Label' in data:
                 pad_label = data['Label']
