@@ -502,7 +502,7 @@ class AbstractDataset(Dataset):
         print('len of sent_len', len(sent_len), '\n') # 16
         print('sent_len[2]=', sent_len[2], '\n' ) # lenght of sentence number 2 in this batch
         '''
-        print('shape of batch_abstract', batch_abstract.shape, '\n', 'shape of batch_label', batch_label.shape, '\n')
+        print('cols of batch_abstract', len(batch_abstract[0]), '\n', 'cols of batch_label', len(batch_label[0]), '\n')
         return torch.LongTensor(batch_abstract), torch.FloatTensor(batch_label), sent_len
 
 
