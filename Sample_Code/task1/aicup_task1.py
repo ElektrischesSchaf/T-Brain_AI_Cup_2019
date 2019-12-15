@@ -640,7 +640,7 @@ def _run_epoch(epoch, mode):
     for i, (x, y, sent_len) in trange: # x = torch.LongTensor(batch_abstract), y = torch.FloatTensor(batch_label), sent_len = sent_len
 
         # Butters
-        print('In _run_epoch: \n', 'i=', str(i), '\n', 'shape of x', x.shape, '\n', 'shape of y', y.shape, 'len of sent_len', len(sent_len, '\n'))
+        print('In _run_epoch: \n', 'i=', str(i), '\n', 'shape of x', x.shape, '\n', 'shape of y', y.shape, 'len of sent_len', len(sent_len), '\n'))
         o_labels, batch_loss = _run_iter(x,y)
         if mode=="train":
             opt.zero_grad()
