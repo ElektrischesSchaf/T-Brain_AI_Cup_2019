@@ -318,7 +318,7 @@ for word, i in word_dict.items():
     embedding_vector = embeddings_index.get(word)
     if embedding_vector is not None:
         embedding_matrix[i] = embedding_vector
-        # shape of embedding_matrix = (34966, 100) 
+        # shape of embedding_matrix = (34966, 100) = (length of word_dict, embedding_dim)
 
 
 # In[ ]:
@@ -493,12 +493,16 @@ class AbstractDataset(Dataset):
                 pad_label.extend([[0]*6]*(max_sent-len(pad_label)))
                 
                 batch_label.append(pad_label)
+
+        
+        print('In class AbstractDataset(Dataset): \n')
         '''
         print('len of batch_abstract', len(batch_abstract), '\n') # 16
         print('len of batch_label', len(batch_label), '\n') # 16
         print('len of sent_len', len(sent_len), '\n') # 16
         print('sent_len[2]=', sent_len[2], '\n' ) # lenght of sentence number 2 in this batch
         '''
+        print('shape of batch_abstract', batch_abstract.shape, '\n', 'shape of batch_label', batch_label.shape, '\n')
         return torch.LongTensor(batch_abstract), torch.FloatTensor(batch_label), sent_len
 
 
@@ -631,7 +635,12 @@ def _run_epoch(epoch, mode):
     trange = tqdm(enumerate(dataloader), total=len(dataloader), desc=description)
     loss = 0
     f1_score = F1()
-    for i, (x, y, sent_len) in trange:
+
+    # from class AbstractDataset(Dataset) 
+    for i, (x, y, sent_len) in trange: # x = torch.LongTensor(batch_abstract), y = torch.FloatTensor(batch_label), sent_len = sent_len
+
+        # Butters
+        print('In _run_epoch: \n', 'i=', str(i), '\n', 'shape of x', x.shape, '\n', 'shape of y', y.shape, 'len of sent_len', len(sent_len, '\n'))
         o_labels, batch_loss = _run_iter(x,y)
         if mode=="train":
             opt.zero_grad()
@@ -658,6 +667,7 @@ def _run_epoch(epoch, mode):
 def _run_iter(x,y):
     abstract = x.to(device)
     labels = y.to(device)
+    # Butters
     print('In _run_iter \n', 'shape of x', x.shape, '\n', 'shape of y', y.shape, '\n')
     o_labels = model(abstract)
     l_loss = criteria(o_labels, labels)
