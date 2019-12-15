@@ -502,7 +502,8 @@ class AbstractDataset(Dataset):
         print('len of sent_len', len(sent_len), '\n') # 16
         print('sent_len[2]=', sent_len[2], '\n' ) # lenght of sentence number 2 in this batch
         '''
-        print('cols of batch_abstract', len(batch_abstract[0]), '\n', 'cols of batch_label', len(batch_label[0]), '\n')
+        print('len of batch_abstract[0]', len(batch_abstract[0]), ' ', 'len of batch_label[0]', len(batch_label[0]), ' ', 'len of sent_len[0]', len(sent_len[0]), '\n')
+        print('max_sent = ', str(max_sent), ' ', 'max_len = ', str(max_len), '\n')
         return torch.LongTensor(batch_abstract), torch.FloatTensor(batch_label), sent_len
 
 
@@ -640,7 +641,7 @@ def _run_epoch(epoch, mode):
     for i, (x, y, sent_len) in trange: # x = torch.LongTensor(batch_abstract), y = torch.FloatTensor(batch_label), sent_len = sent_len
 
         # Butters
-        print('In _run_epoch: \n', 'i=', str(i), '\n', 'shape of x', x.shape, '\n', 'shape of y', y.shape, 'len of sent_len', len(sent_len), '\n'))
+        print('In _run_epoch, i=', str(i), ' ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, ' ', 'len of sent_len', len(sent_len), '\n')
         o_labels, batch_loss = _run_iter(x,y)
         if mode=="train":
             opt.zero_grad()
@@ -668,7 +669,7 @@ def _run_iter(x,y):
     abstract = x.to(device)
     labels = y.to(device)
     # Butters
-    print('In _run_iter \n', 'shape of x', x.shape, '\n', 'shape of y', y.shape, '\n')
+    print('In _run_iter, ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, ' ')
     o_labels = model(abstract)
     l_loss = criteria(o_labels, labels)
     return o_labels, l_loss
