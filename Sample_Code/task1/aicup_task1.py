@@ -523,12 +523,6 @@ print('type of testData', type(testData), '\n')
 # In[ ]:
 
 
-trainData
-
-
-# In[ ]:
-
-
 class Net(nn.Module):
     def __init__(self, vocabulary_size): # vocabulary_size is the lenght of word_dict
         super(Net, self).__init__()
@@ -664,6 +658,7 @@ def _run_epoch(epoch, mode):
 def _run_iter(x,y):
     abstract = x.to(device)
     labels = y.to(device)
+    print('In _run_iter \n', 'shape of x', x.shape, '\n', 'shape of y', y.shape, '\n')
     o_labels = model(abstract)
     l_loss = criteria(o_labels, labels)
     return o_labels, l_loss
