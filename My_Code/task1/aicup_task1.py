@@ -145,6 +145,49 @@ for i in range(len(dataset['Abstract'])):
 dataset.to_csv(os.path.join(CWD,'data/testset.csv'),index=False)
 testset = pd.read_csv('data/testset.csv', dtype=str)
 
+PAD_TOKEN = 0
+UNK_TOKEN = 1
+word_dict = {'<pad>':PAD_TOKEN,'<unk>':UNK_TOKEN}
+
+for word in words:
+    word_dict[word]=len(word_dict) # len(word_dict)= 34966
+
+    '''
+    print(len(word_dict))
+    i = 0
+    for item in word_dict.items():
+        if i > 20:
+            break
+        print(item)
+        i = i + 1
+
+    ('<pad>', 0)
+    ('<unk>', 1)
+    ('scrambling', 2)
+    ('fitbit', 3)
+    ('x-y', 4)
+    ('usv', 5)
+    ('feeds', 6)
+    ('ganglia', 7)
+    ('reconciling', 😎
+    ('hack', 9)
+    ('multi-modality', 10)
+    ('physics', 11)
+    ('compartment', 12)
+    ('pre-publication', 13)
+    ('sensitivity-based', 14)
+    ('hindex', 15)
+    ('lpi', 16)
+    ('astor4android', 17)
+    ('downstream', 18)
+    ('representation/estimation', 19)
+    ('pull-in', 20)
+    '''
+
+
+with open(os.path.join(CWD,'dicitonary.pkl'),'wb') as f:
+    pickle.dump(word_dict, f)
+
 # New 2019-12-16
 
 def sentence_to_indices(sentence, word_dict):
@@ -263,50 +306,7 @@ words |= collect_words(os.path.join(CWD,'data/trainset.csv'))
 # In[ ]:
 
 
-PAD_TOKEN = 0
-UNK_TOKEN = 1
-word_dict = {'<pad>':PAD_TOKEN,'<unk>':UNK_TOKEN}
 
-for word in words:
-    word_dict[word]=len(word_dict) # len(word_dict)= 34966
-
-    '''
-    print(len(word_dict))
-    i = 0
-    for item in word_dict.items():
-        if i > 20:
-            break
-        print(item)
-        i = i + 1
-
-    ('<pad>', 0)
-    ('<unk>', 1)
-    ('scrambling', 2)
-    ('fitbit', 3)
-    ('x-y', 4)
-    ('usv', 5)
-    ('feeds', 6)
-    ('ganglia', 7)
-    ('reconciling', 😎
-    ('hack', 9)
-    ('multi-modality', 10)
-    ('physics', 11)
-    ('compartment', 12)
-    ('pre-publication', 13)
-    ('sensitivity-based', 14)
-    ('hindex', 15)
-    ('lpi', 16)
-    ('astor4android', 17)
-    ('downstream', 18)
-    ('representation/estimation', 19)
-    ('pull-in', 20)
-    '''
-
-# In[ ]:
-
-
-with open(os.path.join(CWD,'dicitonary.pkl'),'wb') as f:
-    pickle.dump(word_dict, f)
 
 
 # ### Download Glove pretrained word embedding from web.
