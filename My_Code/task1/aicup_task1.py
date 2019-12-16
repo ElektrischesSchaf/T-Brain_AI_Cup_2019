@@ -141,7 +141,7 @@ for i in range(len(dataset['Abstract'])):
     dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
 dataset.to_csv(os.path.join(CWD,'data/testset.csv'),index=False)
-
+testset = pd.read_csv('data/testset.csv', dtype=str)
 
 # New 2019-12-16
 dataset = pd.read_csv('data/trainset.csv', dtype=str)
