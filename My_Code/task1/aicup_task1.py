@@ -74,7 +74,7 @@ embedding_dim = 100
 hidden_dim = 512
 learning_rate = 1e-4
 max_epoch = 10
-batch_size = 16
+batch_size = 1
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
@@ -639,9 +639,9 @@ class CNN(nn.Module):
 		
 		self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
 		self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False)
-		self.conv1 = nn.Conv3d(16, in_channels, out_channels, (kernel_heights[0], embedding_length), stride, padding)
-		self.conv2 = nn.Conv3d(16, in_channels, out_channels, (kernel_heights[1], embedding_length), stride, padding)
-		self.conv3 = nn.Conv3d(16, in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding)
+		self.conv1 = nn.Conv2d( in_channels, out_channels, (kernel_heights[0], embedding_length), stride, padding)
+		self.conv2 = nn.Conv2d( in_channels, out_channels, (kernel_heights[1], embedding_length), stride, padding)
+		self.conv3 = nn.Conv2d( in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding)
 		self.dropout = nn.Dropout(keep_probab)
 		#self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 	
@@ -679,7 +679,7 @@ class CNN(nn.Module):
 		print('\n input.size() 1: ', input.size(), end='')
 		# input.size() = (batch_size, num_seq, embedding_length) = torch.Size([32, 200, 300])
 
-		input = input.unsqueeze(1)
+		#input = input.unsqueeze(1)
 
 		print(', input.size() 2: ', input.size(), end='')
 		# input.size() = (batch_size, 1, num_seq, embedding_length) = torch.Size([32, 1, 200, 300])
@@ -834,7 +834,7 @@ def save(epoch):
 
 # CNN model
 # batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 1, 1, [9,7,5], 1, 0, 0.6, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 5, 1, [9,7,5], 1, 0, 0.6, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
