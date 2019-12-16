@@ -1,6 +1,7 @@
 /aicup2019_venv
 /.vscode
 glove/
+My_Code/task1/test_experiment/
 *.ini
 *.pkl
 Sample_Code/task1/*.pkl
