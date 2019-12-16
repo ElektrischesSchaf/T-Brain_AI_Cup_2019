@@ -676,7 +676,11 @@ def _run_iter(x,y):
     labels = y.to(device)
     print('In _run_iter, ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, '\n')
     o_labels = model(abstract)
+<<<<<<< HEAD
     #print('The output shape: ', o_labels.shape, ' The label shape: ', labels.shape, '\n')
+=======
+    print('The output shape: ', o_labels.shape, ' The label shape: ', labels.shape, '\n')
+>>>>>>> fed3594a165b9a0672773a5e0b9f2b4c5a5c0dba
     l_loss = criteria(o_labels, labels)
     return o_labels, l_loss
 
