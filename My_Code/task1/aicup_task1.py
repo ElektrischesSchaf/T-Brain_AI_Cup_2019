@@ -12,6 +12,7 @@ import pickle, json, re, time
 
 import torch
 import torch.nn as nn
+from torchtext import data
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.tensorboard import SummaryWriter
