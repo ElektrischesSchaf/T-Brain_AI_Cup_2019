@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 #get_ipython().run_line_magic('matplotlib', 'inline')
 import pickle, json, re, time
-
+import torch.utils.data as Data
 import torch
 import torch.nn as nn
 from torchtext import data
@@ -831,9 +831,9 @@ def _run_epoch(epoch, mode):
 
     # from class AbstractDataset(Dataset) 
     #for i, (x, y) in trange: # x = torch.LongTensor(batch_abstract), y = torch.FloatTensor(batch_label), sent_len = sent_len
-    train_iter, valid_iter, test_iter = data.BucketIterator.splits((trainset, validset, testset), batch_size=32, sort_key=lambda x: len(x.text), repeat=False, shuffle=True)
-
-    for idx, batch in enumerate(train_iter):
+    #train_iter, valid_iter, test_iter = data.BucketIterator.splits((trainset, validset, testset), batch_size=32, sort_key=lambda x: len(x.text), repeat=False, shuffle=True)
+    train_loader = Data.DataLoader(dataset=trainset, batch_size=batch_size, shuffle=True)
+    for idx, batch in enumerate(train_loader):
         # Butters
         #print('In _run_epoch, i=', str(i), ' ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, ' ', 'len of sent_len', len(sent_len), '\n')
         x=batch.text[0]
