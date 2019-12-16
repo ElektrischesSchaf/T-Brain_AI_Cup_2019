@@ -9,12 +9,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 #get_ipython().run_line_magic('matplotlib', 'inline')
 import pickle, json, re, time
-import torch.utils.data as Data
+
 import torch
 import torch.nn as nn
-from torchtext import data
-import torch.utils.data as data_utils
-
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.tensorboard import SummaryWriter
@@ -95,8 +92,6 @@ config_fname = write_config(os.path.join(CWD,"config"), True)
 dataset = pd.read_csv( os.path.join(CWD,'data/task1_trainset.csv'), dtype=str)
 
 
-
-
 # In[ ]:
 
 
@@ -118,13 +113,21 @@ dataset['Abstract'] = dataset['Abstract'].str.lower()
 for i in range(len(dataset['Abstract'])):
     dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
+
+# In[ ]:
+
+# Three columns, Id, Abstract(lower case), Task1 
+dataset.head()
+
+
+# In[ ]:
+
+
+# set test_size=0.1 for validation split
 trainset, validset = train_test_split(dataset, test_size=0.1, random_state=42)
 
 trainset.to_csv(os.path.join(CWD,'data/trainset.csv'),index=False)
 validset.to_csv(os.path.join(CWD,'data/validset.csv'),index=False)
-
-
-# In[ ]:
 
 
 # In[ ]:
@@ -143,7 +146,11 @@ for i in range(len(dataset['Abstract'])):
     dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
 dataset.to_csv(os.path.join(CWD,'data/testset.csv'),index=False)
-testset = pd.read_csv('data/testset.csv', dtype=str)
+
+
+# ### Collect words and create the vocabulary set
+
+# In[ ]:
 
 
 from multiprocessing import Pool
@@ -203,8 +210,15 @@ def collect_words(data_path, n_workers=4):
     ...
     '''
 
+
+# In[ ]:
+
+
 words = set()
 words |= collect_words(os.path.join(CWD,'data/trainset.csv'))
+
+
+# In[ ]:
 
 
 PAD_TOKEN = 0
@@ -246,71 +260,11 @@ for word in words:
     ('pull-in', 20)
     '''
 
-
-with open(os.path.join(CWD,'dicitonary.pkl'),'wb') as f:
-    pickle.dump(word_dict, f)
-
-# New 2019-12-16
-
-def sentence_to_indices(sentence, word_dict):
-    """ Convert sentence to its word indices.
-    Args:
-        sentence (str): One string.
-    Return:
-        indices (list of int): List of word indices.
-    """
-    return [word_dict.get(word,UNK_TOKEN) for word in word_tokenize(sentence)]
-
-
-dataset = pd.read_csv('data/trainset.csv', dtype=str)
-sent_list = []
-label_list = []
-
-for i in dataset.iterrows():
-    # remove $$$ and append to sent_list
-    
-    sent_list +=  i[1]['Abstract'].split('$$$')
-    label_list += i[1]['Task 1'].split(' ')
-
-print('len of sent_list', len(sent_list), '\n')
-
-print('sent_list[0]', sent_list[0],'\n')
-print('sent_list[0] after', sentence_to_indices(sent_list[0], word_dict) ,'\n')
-
-for i in range(len(sent_list)):
-    sent_list[i] = sentence_to_indices(sent_list[i] , word_dict)
-
-df = pd.DataFrame({'Abstract': sent_list, 'Label': label_list})
-
-def label_to_onehot(labels):
-    """ Convert label to onehot .
-        Args:
-            labels (string): sentence's labels.
-        Return:
-            outputs (onehot list): sentence's onehot label.
-    """
-    label_dict = {'BACKGROUND': 0, 'OBJECTIVES':1, 'METHODS':2, 'RESULTS':3, 'CONCLUSIONS':4, 'OTHERS':5}
-    onehot = [0,0,0,0,0,0]
-    for l in labels.split('/'):
-        onehot[label_dict[l]] = 1
-    return tuple(onehot)
-
-df['Onehot'] = df['Label'].apply(label_to_onehot)
-
-df = df.loc[:, ['Abstract', 'Onehot']]
-
-df.rename(columns={'Abstract': 0, 'Onehot': 1})
-
-trainset, validset = train_test_split(df, test_size=0.1, random_state=42)
-
-# ### Collect words and create the vocabulary set
-
 # In[ ]:
 
 
-
-
-
+with open(os.path.join(CWD,'dicitonary.pkl'),'wb') as f:
+    pickle.dump(word_dict, f)
 
 
 # ### Download Glove pretrained word embedding from web.
@@ -390,7 +344,7 @@ embedding_matrix = torch.FloatTensor(embedding_matrix)
 
 # In[ ]:
 
-'''
+
 def label_to_onehot(labels):
     """ Convert label to onehot .
         Args:
@@ -472,18 +426,18 @@ def preprocess_sample(data, word_dict):
         processed['Label'] = [label_to_onehot(label) for label in data['Task 1'].split(' ')]
         
     return processed
-'''
+
 
 # In[ ]:
 
-'''
+
 print('[INFO] Start processing trainset...')
 train = get_dataset(os.path.join(CWD,'data/trainset.csv'), word_dict, n_workers=4)
 print('[INFO] Start processing validset...')
 valid = get_dataset(os.path.join(CWD,'data/validset.csv'), word_dict, n_workers=4)
 print('[INFO] Start processing testset...')
 test = get_dataset(os.path.join(CWD,'data/testset.csv'), word_dict, n_workers=4)
-'''
+
 
 # ### Create a dataset class for the abstract dataset
 # `torch.utils.data.Dataset` is an abstract class representing a dataset.<br />Your custom dataset should inherit Dataset and override the following methods:
@@ -555,16 +509,20 @@ class AbstractDataset(Dataset):
 
 # In[ ]:
 
+
+trainData = AbstractDataset(train, PAD_TOKEN, max_len = 64)
+
+
 # In[ ]:
 
 
-trainData = AbstractDataset(trainset, PAD_TOKEN, max_len = 64)
-validData = AbstractDataset(validset, PAD_TOKEN, max_len = 64)
-testData = AbstractDataset(testset, PAD_TOKEN, max_len = 64)
+trainData = AbstractDataset(train, PAD_TOKEN, max_len = 64)
+validData = AbstractDataset(valid, PAD_TOKEN, max_len = 64)
+testData = AbstractDataset(test, PAD_TOKEN, max_len = 64)
 
-#print('type of trainData', type(trainData), '\n')
-#print('type of validData', type(validData), '\n')
-#print('type of testData', type(testData), '\n')
+print('type of trainData', type(trainData), '\n')
+print('type of validData', type(validData), '\n')
+print('type of testData', type(testData), '\n')
 
 
 # In[ ]:
@@ -847,10 +805,9 @@ def _run_epoch(epoch, mode):
 
     # from class AbstractDataset(Dataset) 
     for i, (x, y, sent_len) in trange: # x = torch.LongTensor(batch_abstract), y = torch.FloatTensor(batch_label), sent_len = sent_len
+
         # Butters
         #print('In _run_epoch, i=', str(i), ' ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, ' ', 'len of sent_len', len(sent_len), '\n')
-        x=batch.text[0]
-        y=batch.label
         o_labels, batch_loss = _run_iter(x,y)
         if mode=="train":
             opt.zero_grad()
