@@ -646,7 +646,7 @@ class CNN(nn.Module):
 		#self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
 	def conv_block(self, input, conv_layer, b, s, w):
-	        '''
+        '''
 		conv_out = conv_layer(input) # conv_out.size() = (batch_size, out_channels, dim, 1)
 		activation = F.relu(conv_out.squeeze(3))# activation.size() = (batch_size, out_channels, dim1)
 		max_out = F.max_pool1d(activation, activation.size()[2]).squeeze(2)# maxpool_out.size() = (batch_size, out_channels)
