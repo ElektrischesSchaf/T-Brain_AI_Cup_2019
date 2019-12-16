@@ -832,6 +832,7 @@ def _run_epoch(epoch, mode):
     # from class AbstractDataset(Dataset) 
     #for i, (x, y) in trange: # x = torch.LongTensor(batch_abstract), y = torch.FloatTensor(batch_label), sent_len = sent_len
     #train_iter, valid_iter, test_iter = data.BucketIterator.splits((trainset, validset, testset), batch_size=32, sort_key=lambda x: len(x.text), repeat=False, shuffle=True)
+    print('\n train_loader\n')
     train_loader = Data.DataLoader(dataset=trainset, batch_size=batch_size, shuffle=True)
     for idx, batch in enumerate(train_loader):
         # Butters
