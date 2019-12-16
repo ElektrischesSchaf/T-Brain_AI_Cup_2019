@@ -545,9 +545,9 @@ class AbstractDataset(Dataset):
 #validData = AbstractDataset(valid, PAD_TOKEN, max_len = 64)
 #testData = AbstractDataset(test, PAD_TOKEN, max_len = 64)
 
-print('type of trainData', type(trainData), '\n')
-print('type of validData', type(validData), '\n')
-print('type of testData', type(testData), '\n')
+#print('type of trainData', type(trainData), '\n')
+#print('type of validData', type(validData), '\n')
+#print('type of testData', type(testData), '\n')
 
 
 # In[ ]:
@@ -812,16 +812,16 @@ def _run_epoch(epoch, mode):
     model.train(True)
     if mode=="train":
         description = 'Train'
-        dataset = trainData
+        dataset = trainset
         shuffle = True
     else:
         description = 'Valid'
-        dataset = validData
+        dataset = validset
         shuffle = False
     dataloader = DataLoader(dataset=dataset,
                             batch_size=batch_size,
                             shuffle=shuffle,
-                            collate_fn=dataset.collate_fn,
+                            #collate_fn=dataset.collate_fn,
                             num_workers=8)
 
     trange = tqdm(enumerate(dataloader), total=len(dataloader), desc=description)
