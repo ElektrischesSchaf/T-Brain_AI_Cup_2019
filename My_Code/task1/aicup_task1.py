@@ -74,7 +74,7 @@ embedding_dim = 100
 hidden_dim = 512
 learning_rate = 1e-4
 max_epoch = 10
-batch_size = 16
+batch_size = 1
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
@@ -647,19 +647,11 @@ class CNN(nn.Module):
 
 	def conv_block(self, input, conv_layer, b, s, w):
 
-		#conv_out = conv_layer(input) # conv_out.size() = (batch_size, out_channels, dim, 1)
-		#activation = F.relu(conv_out.squeeze(3))# activation.size() = (batch_size, out_channels, dim1)
-		#max_out = F.max_pool1d(activation, activation.size()[2]).squeeze(2)# maxpool_out.size() = (batch_size, out_channels)
+		conv_out = conv_layer(input) # conv_out.size() = (batch_size, out_channels, dim, 1)        
+        #print('\nconv_out.size() = ', conv_out.size(), '\n')
+		activation = F.relu(conv_out.squeeze(3))# activation.size() = (batch_size, out_channels, dim1)
+		max_out = F.max_pool1d(activation, activation.size()[2]).squeeze(2)# maxpool_out.size() = (batch_size, out_channels)
 
-		conv_out = conv_layer(input)
-		print("\n conv_out.size()", conv_out.size(), '\n') # conv_out.size() = (batch_size, out_channels, dim, 1)
-		activation=F.relu(conv_out)
-		print("\n activation.size()", activation.size(), '\n')
-		max_out=activation.squeeze(3)
-
-		#max_out=activation.view(b, s, 6)
-
-		print("\n max_out.size()", max_out.size(), '\n')
 		return max_out
 
 	def forward(self, input_sentences, batch_size=batch_size):
@@ -849,7 +841,7 @@ def save(epoch):
 
 # CNN model
 # batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 1, 1, [9,7,5], 1, 0, 0.6, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 1, 2, [9,7,5], 1, 0, 0.6, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
