@@ -717,6 +717,8 @@ class CNN(nn.Module):
 		# fc_in.size()) = (batch_size, num_kernels*out_channels) =  torch.Size([16, 3])
 
 		one=nn.Linear( 600, s*w)
+        one.to(device)
+        fc_in.to(device)
 		fc_in=one(fc_in)
 
 		print('\nIn forward, fc_in.size(): ', all_out.size(), end='')
