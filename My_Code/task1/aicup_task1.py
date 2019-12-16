@@ -684,8 +684,8 @@ class CNN(nn.Module):
 		print(', input.size() 2: ', input.size(), end='')
 		# input.size() = (batch_size, 1, num_seq, embedding_length) = torch.Size([32, 1, 200, 300])
 
-        input=input.view(b, s*w, e)
-        print(', input.size() 3: ', input.size(), end='')
+		input=input.view(b, s*w, e)
+		print(', input.size() 3: ', input.size(), end='')
 
 		max_out1 = self.conv_block(input, self.conv1)
 
