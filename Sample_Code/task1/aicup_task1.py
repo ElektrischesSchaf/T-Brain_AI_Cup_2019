@@ -564,7 +564,7 @@ class Net(nn.Module):
         # x = (16, num of sentences, num of words, 100)
         #print('In forward 2, shape of x = ', x.shape, end=' ')
 
-        b, s, w, e = x.shape        
+        b, s, w, e = x.shape
         x = x.view(b, s*w, e)
 
         # x = (16, num of sentences X num of words, 100)
