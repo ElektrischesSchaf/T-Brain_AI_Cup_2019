@@ -639,7 +639,7 @@ class CNN(nn.Module):
 
 		self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
 		self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False)
-		self.conv1 = nn.Conv2d( in_channels, out_channels, (kernel_heights[0], embedding_length), stride, padding)
+		self.conv1 = nn.Conv2d( in_channels, out_channels, (kernel_heights[0], embedding_length), stride, padding=8)
 		self.conv2 = nn.Conv2d( in_channels, out_channels, (kernel_heights[1], embedding_length), stride, padding)
 		self.conv3 = nn.Conv2d( in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding)
 		self.dropout = nn.Dropout(keep_probab)
@@ -652,13 +652,13 @@ class CNN(nn.Module):
 		#max_out = F.max_pool1d(activation, activation.size()[2]).squeeze(2)# maxpool_out.size() = (batch_size, out_channels)
 
 		conv_out = conv_layer(input)
-		print("\n conv_out.size()", conv_out.size(), '\n')
+		print("\n conv_out.size()", conv_out.size(), '\n') # conv_out.size() = (batch_size, out_channels, dim, 1)
 		activation=F.relu(conv_out)
 		print("\n activation.size()", activation.size(), '\n')
         max_out=activation.view(b, s, -1)
         
 		#max_out=activation.view(b, s, 6)
-        
+
 		print("\n max_out.size()", max_out.size(), '\n')
 		return max_out
 
