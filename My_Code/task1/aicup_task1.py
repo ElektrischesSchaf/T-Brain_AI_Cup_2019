@@ -269,8 +269,11 @@ label_list = []
 for i in dataset.iterrows():
     # remove $$$ and append to sent_list
     
-    sent_list +=  sentence_to_indices(i[1]['Abstract'].split('$$$'), word_dict)
+    sent_list +=  i[1]['Abstract'].split('$$$')
     label_list += i[1]['Task 1'].split(' ')
+
+for i in sent_list:
+    sentence_to_indices(i,word_dict)
 
 df = pd.DataFrame({'Abstract': sent_list, 'Label': label_list})
 
