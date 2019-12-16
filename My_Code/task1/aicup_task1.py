@@ -157,7 +157,6 @@ for i in dataset.iterrows():
 
 df = pd.DataFrame({'Abstract': sent_list, 'Label': label_list})
 
-
 def label_to_onehot(labels):
     """ Convert label to onehot .
         Args:
@@ -171,8 +170,18 @@ def label_to_onehot(labels):
         onehot[label_dict[l]] = 1
     return tuple(onehot)
 
-df['Onehot'] = df['Label'].apply(label_to_onehot)
+def sentence_to_indices(sentence, word_dict):
+    """ Convert sentence to its word indices.
+    Args:
+        sentence (str): One string.
+    Return:
+        indices (list of int): List of word indices.
+    """
+    return [word_dict.get(word,UNK_TOKEN) for word in word_tokenize(sentence)]
 
+
+df['Onehot'] = df['Label'].apply(label_to_onehot)
+df['Abstract'] = df['Abstract'].apply(sentence_to_indices)
 
 df = df.loc[:, ['Abstract', 'Onehot']]
 
@@ -831,7 +840,9 @@ def _run_epoch(epoch, mode):
     loss = 0
     f1_score = F1()
 
+    print('trainset.head()', trainset.head(),'\n')
     print('\n train_loader\n')
+
     print('type of trainset', type(trainset), '\n')
     torch_dataset = Data.TensorDataset(trainset.loc[:,"Abstract"], trainset.loc[:,"Onehot"])
 
