@@ -831,18 +831,18 @@ def _run_epoch(epoch, mode):
     loss = 0
     f1_score = F1()
 
-    # from class AbstractDataset(Dataset) 
-    #for i, (x, y) in trange: # x = torch.LongTensor(batch_abstract), y = torch.FloatTensor(batch_label), sent_len = sent_len
-    #train_iter, valid_iter, test_iter = data.BucketIterator.splits((trainset, validset, testset), batch_size=32, sort_key=lambda x: len(x.text), repeat=False, shuffle=True)
+
     print('\n train_loader\n')
+    torch_dataset = Data.TensorDataset(data_tensor=trainset["Abstract"], target_tensor=trainset["Onehot"])
 
-    df = trainset
-    tmp=df.values
-    result=torch.from_numpy(tmp)
-    train = data_utils.TensorDataset(torch.Tensor(input), torch.Tensor(target))
-    train_loader = data_utils.DataLoader(dataset =train, batch_size = 10, shuffle = True)
+    loader = Data.DataLoader(
+    dataset=torch_dataset,      # torch TensorDataset format
+    batch_size=BATCH_SIZE,      # mini batch size
+    shuffle=True,               # 要不要打乱数据 (打乱比较好)
+    num_workers=2,              # 多线程来读数据
+    )
 
-    for idx, batch in enumerate(train_loader):
+    for idx, batch in enumerate(loader):
         # Butters
         #print('In _run_epoch, i=', str(i), ' ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, ' ', 'len of sent_len', len(sent_len), '\n')
         x=batch.text[0]
