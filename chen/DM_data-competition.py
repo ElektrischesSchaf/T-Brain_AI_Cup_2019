@@ -178,8 +178,6 @@ model = MultiLabelClassificationModel('roberta',
 
 # In[ ]:
 
-model.to(device)
-trainset.to(device)
 
 model.train_model(trainset)
 
