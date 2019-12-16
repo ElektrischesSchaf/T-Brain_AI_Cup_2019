@@ -145,6 +145,11 @@ for i in range(len(dataset['Abstract'])):
 dataset.to_csv(os.path.join(CWD,'data/testset.csv'),index=False)
 testset = pd.read_csv('data/testset.csv', dtype=str)
 
+
+words = set()
+words |= collect_words(os.path.join(CWD,'data/trainset.csv'))
+
+
 PAD_TOKEN = 0
 UNK_TOKEN = 1
 word_dict = {'<pad>':PAD_TOKEN,'<unk>':UNK_TOKEN}
