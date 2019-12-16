@@ -833,7 +833,7 @@ def _run_epoch(epoch, mode):
 
 
     print('\n train_loader\n')
-    torch_dataset = Data.TensorDataset(data_tensor=trainset["Abstract"], target_tensor=trainset["Onehot"])
+    torch_dataset = Data.TensorDataset(trainset["Abstract"], trainset["Onehot"])
 
     loader = Data.DataLoader(
     dataset=torch_dataset,      # torch TensorDataset format
