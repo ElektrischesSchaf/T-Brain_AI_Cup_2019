@@ -645,11 +645,19 @@ class CNN(nn.Module):
 		self.dropout = nn.Dropout(keep_probab)
 		#self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 	
-	def conv_block(self, input, conv_layer):
+	def conv_block(self, input, conv_layer, b, s, w):
+        '''
 		conv_out = conv_layer(input) # conv_out.size() = (batch_size, out_channels, dim, 1)
 		activation = F.relu(conv_out.squeeze(3))# activation.size() = (batch_size, out_channels, dim1)
 		max_out = F.max_pool1d(activation, activation.size()[2]).squeeze(2)# maxpool_out.size() = (batch_size, out_channels)
-		
+		'''
+        conv_out = conv_layer(input)
+        print("\n conv_out.size()", conv_out.size(), '\n')
+        activation=F.relu(conv_out)
+        print("\n activation.size()", activation.size(), '\n')
+        max_out=activation.view(b, s, 6)
+        print("\n max_out.size()", max_out.size(), '\n')
+        
 		return max_out
 	
 	def forward(self, input_sentences, batch_size=batch_size):
@@ -694,17 +702,17 @@ class CNN(nn.Module):
 		print(', input.size() 4: ', input.size(), end='')
         	# torch.Size([16, 1, 385, 100])
 
-		max_out1 = self.conv_block(input, self.conv1)
+		max_out1 = self.conv_block(input, self.conv1, b=b, s=s, w=w)
 
 		print(', max_out1.size(): ', max_out1.size(), end='')
 		# max_out1.size() =  torch.Size([16, 1])
 
-		max_out2 = self.conv_block(input, self.conv2)
+		max_out2 = self.conv_block(input, self.conv2, b=b, s=s, w=w)
 
 		print(', max_out2.size(): ', max_out2.size(), end='')
 		# max_out2.size() =  torch.Size([16, 1])
 
-		max_out3 = self.conv_block(input, self.conv3)
+		max_out3 = self.conv_block(input, self.conv3, b=b, s=s, w=w)
 
 		print(', max_out3.size(): ', max_out3.size(), end='')
 		# max_out3.size() =  torch.Size([16, 1])
