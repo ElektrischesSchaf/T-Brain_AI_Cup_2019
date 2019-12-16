@@ -556,21 +556,51 @@ class Net(nn.Module):
     # w: number of words
     # e: embedding_dim
     def forward(self, x):
+        # x = (16, num of sentences, num of words)
+        #print('In forward 1, shape of x = ', x.shape, end=' ')
+
         x = self.embedding(x) # type of x = <class 'torch.Tensor'>
-        b, s, w, e = x.shape
+
+        # x = (16, num of sentences, num of words, 100)
+        #print('In forward 2, shape of x = ', x.shape, end=' ')
+
+        b, s, w, e = x.shape        
         x = x.view(b, s*w, e)
+
+        # x = (16, num of sentences X num of words, 100)
+        #print('In forward 3, shape of x = ', x.shape, end=' ')
+        
         x, __ = self.sent_rnn(x)
+
+        # x = (16, num of sentences X num of words, 1024)
+        #print('In forward 4, shape of x = ', x.shape, end=' ')
+
         x = x.view(b, s, w, -1)
+
+        # x = (16, num of sentences, num of words, 1024)
+        #print('In forward 5, shape of x = ', x.shape, end=' ')
+
         x = torch.max(x, dim=2)[0]
+
+        # x = (16, num of sentences, 1024)
+        #print('In forward 6, shape of x = ', x.shape, end=' ')
+
         #final_ht = x[-1]
         
         #x = self.layernorm1(x)
         
         x = torch.relu(self.l1(x))
+
+        # x = (16, num of sentences, 512)
+        #print('In forward 7, shape of x = ', x.shape, end=' ')
         
         #x = self.layernorm2(x)
         
         x = torch.sigmoid(self.l2(x))
+
+        # x = (16, num of sentences, 6)
+        #print('In forward 8, shape of x = ', x.shape, end=' ')
+
         return x
 
 
@@ -668,8 +698,9 @@ def _run_epoch(epoch, mode):
 def _run_iter(x,y):
     abstract = x.to(device)
     labels = y.to(device)
-    #print('In _run_iter, ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, '\n')
+    #print('\n\n In _run_iter, ', 'shape of x', x.shape, ' ', 'shape of y', y.shape)
     o_labels = model(abstract)
+    #print('The output shape: ', o_labels.shape, ' The label shape: ', labels.shape, '\n')
     l_loss = criteria(o_labels, labels)
     return o_labels, l_loss
 
