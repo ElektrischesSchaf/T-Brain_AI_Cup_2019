@@ -611,7 +611,7 @@ class Net(nn.Module):
 class CNN(nn.Module):
 	def __init__(self, batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights):
 		super(CNN, self).__init__()
-		
+
 		"""
 		Arguments
 		---------
@@ -636,7 +636,7 @@ class CNN(nn.Module):
 		self.padding = padding
 		self.vocab_size = vocab_size
 		self.embedding_length = embedding_length
-		
+
 		self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
 		self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False)
 		self.conv1 = nn.Conv2d( in_channels, out_channels, (kernel_heights[0], embedding_length), stride, padding)
@@ -644,41 +644,40 @@ class CNN(nn.Module):
 		self.conv3 = nn.Conv2d( in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding)
 		self.dropout = nn.Dropout(keep_probab)
 		#self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
-	
+
 	def conv_block(self, input, conv_layer, b, s, w):
-        '''
+	        '''
 		conv_out = conv_layer(input) # conv_out.size() = (batch_size, out_channels, dim, 1)
 		activation = F.relu(conv_out.squeeze(3))# activation.size() = (batch_size, out_channels, dim1)
 		max_out = F.max_pool1d(activation, activation.size()[2]).squeeze(2)# maxpool_out.size() = (batch_size, out_channels)
 		'''
-        conv_out = conv_layer(input)
-        print("\n conv_out.size()", conv_out.size(), '\n')
-        activation=F.relu(conv_out)
-        print("\n activation.size()", activation.size(), '\n')
-        max_out=activation.view(b, s, 6)
-        print("\n max_out.size()", max_out.size(), '\n')
-        
+		conv_out = conv_layer(input)
+		print("\n conv_out.size()", conv_out.size(), '\n')
+		activation=F.relu(conv_out)
+		print("\n activation.size()", activation.size(), '\n')
+		max_out=activation.view(b, s, 6)
+		print("\n max_out.size()", max_out.size(), '\n')
 		return max_out
-	
+
 	def forward(self, input_sentences, batch_size=batch_size):
-		
+
 		"""
 		The idea of the Convolutional Neural Netwok for Text Classification is very simple. We perform convolution operation on the embedding matrix 
 		whose shape for each batch is (num_seq, embedding_length) with kernel of varying height but constant width which is same as the embedding_length.
 		We will be using ReLU activation after the convolution operation and then for each kernel height, we will use max_pool operation on each tensor 
 		and will filter all the maximum activation for every channel and then we will concatenate the resulting tensors. This output is then fully connected
 		to the output layers consisting two units which basically gives us the logits for both positive and negative classes.
-		
+
 		Parameters
 		----------
 		input_sentences: input_sentences of shape = (batch_size, num_sequences)
 		batch_size : default = None. Used only for prediction on a single sentence after training (batch_size = 1)
-		
+
 		Returns
 		-------
 		Output of the linear layer containing logits for pos & neg class.
 		logits.size() = (batch_size, output_size)
-		
+
 		"""
 
 		input = self.word_embeddings(input_sentences)
