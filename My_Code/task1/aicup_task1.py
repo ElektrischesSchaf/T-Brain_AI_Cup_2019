@@ -687,12 +687,12 @@ class CNN(nn.Module):
 		input=input.view(b, s*w, e)
 
 		print(', input.size() 3: ', input.size(), end='')
-        # torch.Size([16, 385, 100])
+        	# torch.Size([16, 385, 100])
 
 		input = input.unsqueeze(1)
 
 		print(', input.size() 4: ', input.size(), end='')
-        # torch.Size([16, 1, 385, 100])
+        	# torch.Size([16, 1, 385, 100])
 
 		max_out1 = self.conv_block(input, self.conv1)
 
@@ -704,15 +704,15 @@ class CNN(nn.Module):
 		print(', max_out2.size(): ', max_out2.size(), end='')
 		# max_out2.size() =  torch.Size([16, 1])
 
-		max_out3 = self.conv_block(input, self.conv3)		
+		max_out3 = self.conv_block(input, self.conv3)
 
 		print(', max_out3.size(): ', max_out3.size(), end='')
 		# max_out3.size() =  torch.Size([16, 1])
-		
+
 		all_out = torch.cat((max_out1, max_out2, max_out3), 1)
 
 		print(', all_out.size(): ', all_out.size(), end='')
-		# all_out.size() = (batch_size, num_kernels*out_channels) = torch.Size([16, 3]) 
+		# all_out.size() = (batch_size, num_kernels*out_channels) = torch.Size([16, 3])
 
 		fc_in = self.dropout(all_out)
 
