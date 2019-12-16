@@ -556,12 +556,18 @@ class Net(nn.Module):
     # w: number of words
     # e: embedding_dim
     def forward(self, x):
+        print('In forward 1, shape of x = ', x.shape, end=' ')
         x = self.embedding(x) # type of x = <class 'torch.Tensor'>
+        print('In forward 2, shape of x = ', x.shape, end=' ')
         b, s, w, e = x.shape
         x = x.view(b, s*w, e)
+        print('In forward 3, shape of x = ', x.shape, end=' ')
         x, __ = self.sent_rnn(x)
+        print('In forward 4, shape of x = ', x.shape, end=' ')
         x = x.view(b, s, w, -1)
+        print('In forward 5, shape of x = ', x.shape, end=' ')
         x = torch.max(x, dim=2)[0]
+        print('In forward 6, shape of x = ', x.shape, end=' ')
         #final_ht = x[-1]
         
         #x = self.layernorm1(x)
@@ -670,7 +676,7 @@ def _run_iter(x,y):
     labels = y.to(device)
     print('In _run_iter, ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, '\n')
     o_labels = model(abstract)
-    print('The output shape: ', o_label.shape, ' The label shape: ', labels.shape. '\n')
+    #print('The output shape: ', o_labels.shape, ' The label shape: ', labels.shape, '\n')
     l_loss = criteria(o_labels, labels)
     return o_labels, l_loss
 
