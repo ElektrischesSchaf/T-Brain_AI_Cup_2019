@@ -830,11 +830,13 @@ def _run_epoch(epoch, mode):
 
     # from class AbstractDataset(Dataset) 
     #for i, (x, y) in trange: # x = torch.LongTensor(batch_abstract), y = torch.FloatTensor(batch_label), sent_len = sent_len
-    for idx, batch in enumerate(dataloader):
+    train_iter, valid_iter, test_iter = data.BucketIterator.splits((trainset, validset, testset), batch_size=32, sort_key=lambda x: len(x.text), repeat=False, shuffle=True)
+
+    for idx, batch in enumerate(train_iter):
         # Butters
         #print('In _run_epoch, i=', str(i), ' ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, ' ', 'len of sent_len', len(sent_len), '\n')
-        x=batch.["Abstract"]
-        y=batch.["Onehot"]
+        x=batch.text[0]
+        y=batch.label
         o_labels, batch_loss = _run_iter(x,y)
         if mode=="train":
             opt.zero_grad()
