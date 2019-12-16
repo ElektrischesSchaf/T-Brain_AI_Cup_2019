@@ -674,7 +674,7 @@ class CNN(nn.Module):
 		"""
 
 		input = self.word_embeddings(input_sentences)
-        b, s, w, e = input.shape
+		b, s, w, e = input.shape
 
 		#print('\n input.size() 1: ', input.size(), end='')
 		# input.size() = (batch_size, num_seq, embedding_length) = torch.Size([32, 200, 300])
@@ -708,9 +708,8 @@ class CNN(nn.Module):
 
 		#print(', fc_in.size(): ', all_out.size(), end='')
 		# fc_in.size()) = (batch_size, num_kernels*out_channels) =  torch.Size([32, 3])
-
-        label=nn.Linear(len(kernel_heights)*out_channels, (batch_size, s, 6))
-		logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)        
+		label=nn.Linear(len(kernel_heights)*out_channels, (batch_size, s, 6))
+		logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
 		#print(', logits.size(): ', logits.size(), '\n')
 		# logits.size() = ( batch_size, output_size)  = torch.Size([32, 2])
