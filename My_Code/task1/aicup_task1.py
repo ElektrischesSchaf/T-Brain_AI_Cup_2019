@@ -379,7 +379,7 @@ embedding_matrix = torch.FloatTensor(embedding_matrix)
 
 # In[ ]:
 
-
+'''
 def label_to_onehot(labels):
     """ Convert label to onehot .
         Args:
@@ -461,7 +461,7 @@ def preprocess_sample(data, word_dict):
         processed['Label'] = [label_to_onehot(label) for label in data['Task 1'].split(' ')]
         
     return processed
-
+'''
 
 # In[ ]:
 
