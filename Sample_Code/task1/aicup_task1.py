@@ -589,14 +589,14 @@ class Net(nn.Module):
         
         #x = self.layernorm1(x)
         
-        x = torch.relu(self.l1(x))
+        x = torch.relu(self.l1(x)) # self.l1 = nn.Linear(self.hidden_dim*2, self.hidden_dim)
 
         # x = (16, num of sentences, 512)
         #print('In forward 7, shape of x = ', x.shape, end=' ')
         
         #x = self.layernorm2(x)
         
-        x = torch.sigmoid(self.l2(x))
+        x = torch.sigmoid(self.l2(x)) # nn.Linear(self.hidden_dim, 6)
 
         # x = (16, num of sentences, 6)
         #print('In forward 8, shape of x = ', x.shape, end=' ')
