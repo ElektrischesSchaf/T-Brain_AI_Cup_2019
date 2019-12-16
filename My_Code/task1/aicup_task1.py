@@ -273,7 +273,9 @@ for i in dataset.iterrows():
     label_list += i[1]['Task 1'].split(' ')
 
 print('len of sent_list', len(sent_list), '\n')
+
 print('sent_list[0]', sent_list[0],'\n')
+print('sent_list[0] after', sentence_to_indices(sent_list[0], word_dict) ,'\n')
 for i in sent_list:
     sentence_to_indices(i,word_dict)
 
