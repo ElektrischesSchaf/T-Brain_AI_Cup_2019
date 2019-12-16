@@ -837,12 +837,10 @@ def _run_epoch(epoch, mode):
     print('\n train_loader\n')
 
     df = trainset
-    input=pd.DataFrame(df['Abstract'])
-    input=torch.from_numpy(input)
-    target = pd.DataFrame(df['Onehot'])
-    target=torch.from_numpy(target)
+    tmp=df.values
+    result=torch.from_numpy(tmp)
     train = data_utils.TensorDataset(torch.Tensor(input), torch.Tensor(target))
-    train_loader = data_utils.DataLoader(train, batch_size = 10, shuffle = True)
+    train_loader = data_utils.DataLoader(dataset =train, batch_size = 10, shuffle = True)
 
     for idx, batch in enumerate(train_loader):
         # Butters
