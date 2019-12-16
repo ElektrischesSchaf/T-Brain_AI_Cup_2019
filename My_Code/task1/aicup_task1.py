@@ -655,8 +655,8 @@ class CNN(nn.Module):
 		print("\n conv_out.size()", conv_out.size(), '\n') # conv_out.size() = (batch_size, out_channels, dim, 1)
 		activation=F.relu(conv_out)
 		print("\n activation.size()", activation.size(), '\n')
-        max_out=activation.view(b, s, -1)
-        
+		max_out=activation.squeeze(3)
+
 		#max_out=activation.view(b, s, 6)
 
 		print("\n max_out.size()", max_out.size(), '\n')
