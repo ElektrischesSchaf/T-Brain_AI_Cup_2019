@@ -831,9 +831,9 @@ def _run_epoch(epoch, mode):
     loss = 0
     f1_score = F1()
 
-
     print('\n train_loader\n')
-    torch_dataset = Data.TensorDataset(trainset["Abstract"], trainset["Onehot"])
+    print('type of trainset', type(trainset), '\n')
+    torch_dataset = Data.TensorDataset(trainset.loc[:,"Abstract"], trainset.loc[:,"Onehot"])
 
     loader = Data.DataLoader(
     dataset=torch_dataset,      # torch TensorDataset format
