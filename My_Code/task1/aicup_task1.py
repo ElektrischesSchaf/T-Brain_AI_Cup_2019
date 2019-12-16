@@ -115,21 +115,14 @@ dataset['Abstract'] = dataset['Abstract'].str.lower()
 for i in range(len(dataset['Abstract'])):
     dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
-
-# In[ ]:
-
-# Three columns, Id, Abstract(lower case), Task1 
-dataset.head()
-
-
-# In[ ]:
-
-'''
-# set test_size=0.1 for validation split
 trainset, validset = train_test_split(dataset, test_size=0.1, random_state=42)
-trainset.to_csv(os.path.join(CWD,'data/trainset.csv'),index=False)
-validset.to_csv(os.path.join(CWD,'data/validset.csv'),index=False)
-'''
+
+trainset.to_csv('../Sample_Code/task1/data/trainset.csv', index=False)
+validset.to_csv('../Sample_Code/task1/data/validset.csv', index=False)
+
+
+# In[ ]:
+
 
 # In[ ]:
 
