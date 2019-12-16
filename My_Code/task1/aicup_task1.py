@@ -146,13 +146,25 @@ dataset.to_csv(os.path.join(CWD,'data/testset.csv'),index=False)
 testset = pd.read_csv('data/testset.csv', dtype=str)
 
 # New 2019-12-16
+
+def sentence_to_indices(sentence, word_dict):
+    """ Convert sentence to its word indices.
+    Args:
+        sentence (str): One string.
+    Return:
+        indices (list of int): List of word indices.
+    """
+    return [word_dict.get(word,UNK_TOKEN) for word in word_tokenize(sentence)]
+
+
 dataset = pd.read_csv('data/trainset.csv', dtype=str)
 sent_list = []
 label_list = []
+
 for i in dataset.iterrows():
     # remove $$$ and append to sent_list
     
-    sent_list += i[1]['Abstract'].split('$$$')
+    sent_list +=  sentence_to_indices(i[1]['Abstract'].split('$$$'), word_dict)
     label_list += i[1]['Task 1'].split(' ')
 
 df = pd.DataFrame({'Abstract': sent_list, 'Label': label_list})
@@ -170,18 +182,7 @@ def label_to_onehot(labels):
         onehot[label_dict[l]] = 1
     return tuple(onehot)
 
-def sentence_to_indices(sentence, word_dict):
-    """ Convert sentence to its word indices.
-    Args:
-        sentence (str): One string.
-    Return:
-        indices (list of int): List of word indices.
-    """
-    return [word_dict.get(word,UNK_TOKEN) for word in word_tokenize(sentence)]
-
-
 df['Onehot'] = df['Label'].apply(label_to_onehot)
-df['Abstract'] = df['Abstract'].apply(sentence_to_indices, word_dict)
 
 df = df.loc[:, ['Abstract', 'Onehot']]
 
