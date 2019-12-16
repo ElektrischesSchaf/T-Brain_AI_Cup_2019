@@ -824,15 +824,17 @@ def _run_epoch(epoch, mode):
                             #collate_fn=dataset.collate_fn,
                             num_workers=8)
 
-    trange = tqdm(enumerate(dataloader), total=len(dataloader), desc=description)
+    #trange = tqdm(enumerate(dataloader), total=len(dataloader), desc=description)
     loss = 0
     f1_score = F1()
 
     # from class AbstractDataset(Dataset) 
-    for i, (x, y) in trange: # x = torch.LongTensor(batch_abstract), y = torch.FloatTensor(batch_label), sent_len = sent_len
-
+    #for i, (x, y) in trange: # x = torch.LongTensor(batch_abstract), y = torch.FloatTensor(batch_label), sent_len = sent_len
+    for idx, batch in enumerate(dataloader):
         # Butters
         #print('In _run_epoch, i=', str(i), ' ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, ' ', 'len of sent_len', len(sent_len), '\n')
+        x=batch.["Abstract"]
+        y=batch.["Onehot"]
         o_labels, batch_loss = _run_iter(x,y)
         if mode=="train":
             opt.zero_grad()
