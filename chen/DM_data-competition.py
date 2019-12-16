@@ -28,6 +28,8 @@ from gensim.parsing import remove_stopwords
 
 import os
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 
 # In[ ]:
 
@@ -148,7 +150,7 @@ trainset, validset = train_test_split(df, test_size=0.1, random_state=42)
 # In[ ]:
 
 
-get_ipython().system('pip install simpletransformers')
+#get_ipython().system('pip install simpletransformers')
 
 
 # In[ ]:
@@ -176,6 +178,8 @@ model = MultiLabelClassificationModel('roberta',
 
 # In[ ]:
 
+model.to(device)
+trainset.to(device)
 
 model.train_model(trainset)
 
