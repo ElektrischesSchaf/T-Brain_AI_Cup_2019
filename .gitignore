@@ -1,6 +1,8 @@
 /aicup2019_venv
 /.vscode
 glove/
+*.ini
+*.pkl
 Sample_Code/task1/*.pkl
 Sample_Code/task1/*.ini
 *.ipynb_checkpoints
