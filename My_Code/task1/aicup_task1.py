@@ -646,11 +646,11 @@ class CNN(nn.Module):
 		#self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
 	def conv_block(self, input, conv_layer, b, s, w):
-        '''
-		conv_out = conv_layer(input) # conv_out.size() = (batch_size, out_channels, dim, 1)
-		activation = F.relu(conv_out.squeeze(3))# activation.size() = (batch_size, out_channels, dim1)
-		max_out = F.max_pool1d(activation, activation.size()[2]).squeeze(2)# maxpool_out.size() = (batch_size, out_channels)
-		'''
+
+		#conv_out = conv_layer(input) # conv_out.size() = (batch_size, out_channels, dim, 1)
+		#activation = F.relu(conv_out.squeeze(3))# activation.size() = (batch_size, out_channels, dim1)
+		#max_out = F.max_pool1d(activation, activation.size()[2]).squeeze(2)# maxpool_out.size() = (batch_size, out_channels)
+
 		conv_out = conv_layer(input)
 		print("\n conv_out.size()", conv_out.size(), '\n')
 		activation=F.relu(conv_out)
@@ -851,7 +851,7 @@ def save(epoch):
 
 # CNN model
 # batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 1, 1, [9,7,5], 1, 0, 0.6, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 1, 2, [9,7,5], 1, 0, 0.6, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
