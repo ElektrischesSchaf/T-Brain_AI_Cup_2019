@@ -181,7 +181,7 @@ def sentence_to_indices(sentence, word_dict):
 
 
 df['Onehot'] = df['Label'].apply(label_to_onehot)
-df['Abstract'] = df['Abstract'].apply(sentence_to_indices)
+df['Abstract'] = df['Abstract'].apply(sentence_to_indices, word_dict)
 
 df = df.loc[:, ['Abstract', 'Onehot']]
 
