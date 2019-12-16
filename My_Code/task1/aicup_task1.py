@@ -829,36 +829,24 @@ def _run_epoch(epoch, mode):
     model.train(True)
     if mode=="train":
         description = 'Train'
-        dataset = trainset
+        dataset = trainData
         shuffle = True
     else:
         description = 'Valid'
-        dataset = validset
+        dataset = validData
         shuffle = False
     dataloader = DataLoader(dataset=dataset,
                             batch_size=batch_size,
                             shuffle=shuffle,
-                            #collate_fn=dataset.collate_fn,
+                            collate_fn=dataset.collate_fn,
                             num_workers=8)
 
-    #trange = tqdm(enumerate(dataloader), total=len(dataloader), desc=description)
+    trange = tqdm(enumerate(dataloader), total=len(dataloader), desc=description)
     loss = 0
     f1_score = F1()
 
-    print('trainset.head()\n', trainset.head(),'\n')
-    print('\n train_loader\n')
-
-    print('type of trainset', type(trainset), '\n')
-    torch_dataset = Data.TensorDataset(trainset.loc[:,"Abstract"], trainset.loc[:,"Onehot"])
-
-    loader = Data.DataLoader(
-    dataset=torch_dataset,      # torch TensorDataset format
-    batch_size=BATCH_SIZE,      # mini batch size
-    shuffle=True,               # 要不要打乱数据 (打乱比较好)
-    num_workers=2,              # 多线程来读数据
-    )
-
-    for idx, batch in enumerate(loader):
+    # from class AbstractDataset(Dataset) 
+    for i, (x, y, sent_len) in trange: # x = torch.LongTensor(batch_abstract), y = torch.FloatTensor(batch_label), sent_len = sent_len
         # Butters
         #print('In _run_epoch, i=', str(i), ' ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, ' ', 'len of sent_len', len(sent_len), '\n')
         x=batch.text[0]
