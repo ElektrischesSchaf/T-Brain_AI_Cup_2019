@@ -652,7 +652,7 @@ class CNN(nn.Module):
 		
 		return max_out
 	
-	def forward(self, input_sentences, batch_size=None):
+	def forward(self, input_sentences, batch_size=batch_size):
 		
 		"""
 		The idea of the Convolutional Neural Netwok for Text Classification is very simple. We perform convolution operation on the embedding matrix 
@@ -676,42 +676,43 @@ class CNN(nn.Module):
 		input = self.word_embeddings(input_sentences)
 		b, s, w, e = input.shape
 
-		#print('\n input.size() 1: ', input.size(), end='')
+		print('\n input.size() 1: ', input.size(), end='')
 		# input.size() = (batch_size, num_seq, embedding_length) = torch.Size([32, 200, 300])
 
 		input = input.unsqueeze(1)
 
-		#print(', input.size() 2: ', input.size(), end='')
+		print(', input.size() 2: ', input.size(), end='')
 		# input.size() = (batch_size, 1, num_seq, embedding_length) = torch.Size([32, 1, 200, 300])
 
 		max_out1 = self.conv_block(input, self.conv1)
 
-		#print(', max_out1.size(): ', max_out1.size(), end='')
+		print(', max_out1.size(): ', max_out1.size(), end='')
 		# max_out1.size() =  torch.Size([32, 1])
 
 		max_out2 = self.conv_block(input, self.conv2)
 
-		#print(', max_out2.size(): ', max_out2.size(), end='')
+		print(', max_out2.size(): ', max_out2.size(), end='')
 		# max_out2.size() =  torch.Size([32, 1])
 
 		max_out3 = self.conv_block(input, self.conv3)		
 
-		#print(', max_out3.size(): ', max_out3.size(), end='')
+		print(', max_out3.size(): ', max_out3.size(), end='')
 		# max_out3.size() =  torch.Size([32, 1])
 		
 		all_out = torch.cat((max_out1, max_out2, max_out3), 1)
 
-		#print(', all_out.size(): ', all_out.size(), end='')
+		print(', all_out.size(): ', all_out.size(), end='')
 		# all_out.size() = (batch_size, num_kernels*out_channels) = torch.Size([32, 3]) 
 
 		fc_in = self.dropout(all_out)
 
-		#print(', fc_in.size(): ', all_out.size(), end='')
+		print(', fc_in.size(): ', all_out.size(), end='')
 		# fc_in.size()) = (batch_size, num_kernels*out_channels) =  torch.Size([32, 3])
+
 		label=nn.Linear(len(kernel_heights)*out_channels, (batch_size, s, 6))
 		logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
-		#print(', logits.size(): ', logits.size(), '\n')
+		print(', logits.size(): ', logits.size(), '\n')
 		# logits.size() = ( batch_size, output_size)  = torch.Size([32, 2])
 
 		return logits
