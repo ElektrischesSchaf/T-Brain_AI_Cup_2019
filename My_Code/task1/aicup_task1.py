@@ -117,8 +117,8 @@ for i in range(len(dataset['Abstract'])):
 
 trainset, validset = train_test_split(dataset, test_size=0.1, random_state=42)
 
-trainset.to_csv('../Sample_Code/task1/data/trainset.csv', index=False)
-validset.to_csv('../Sample_Code/task1/data/validset.csv', index=False)
+trainset.to_csv(os.path.join(CWD,'data/trainset.csv'),index=False)
+validset.to_csv(os.path.join(CWD,'data/validset.csv'),index=False)
 
 
 # In[ ]:
