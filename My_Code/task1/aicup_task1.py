@@ -272,6 +272,7 @@ for i in dataset.iterrows():
     sent_list +=  i[1]['Abstract'].split('$$$')
     label_list += i[1]['Task 1'].split(' ')
 
+print('len of sent_list', len(sent_list), '\n')
 for i in sent_list:
     sentence_to_indices(i,word_dict)
 
@@ -840,7 +841,7 @@ def _run_epoch(epoch, mode):
     loss = 0
     f1_score = F1()
 
-    print('trainset.head()', trainset.head(),'\n')
+    print('trainset.head()\n', trainset.head(),'\n')
     print('\n train_loader\n')
 
     print('type of trainset', type(trainset), '\n')
