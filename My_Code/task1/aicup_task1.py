@@ -639,9 +639,9 @@ class CNN(nn.Module):
 		
 		self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
 		self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False)
-		self.conv1 = nn.Conv2d(16, in_channels, out_channels, (kernel_heights[0], embedding_length), stride, padding)
-		self.conv2 = nn.Conv2d(16, in_channels, out_channels, (kernel_heights[1], embedding_length), stride, padding)
-		self.conv3 = nn.Conv2d(16,in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding)
+		self.conv1 = nn.Conv3d(16, in_channels, out_channels, (kernel_heights[0], embedding_length), stride, padding)
+		self.conv2 = nn.Conv3d(16, in_channels, out_channels, (kernel_heights[1], embedding_length), stride, padding)
+		self.conv3 = nn.Conv3d(16, in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding)
 		self.dropout = nn.Dropout(keep_probab)
 		#self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 	
