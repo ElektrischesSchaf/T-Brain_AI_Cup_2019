@@ -74,7 +74,7 @@ embedding_dim = 100
 hidden_dim = 512
 learning_rate = 1e-4
 max_epoch = 10
-batch_size = 1
+batch_size = 16
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
@@ -716,7 +716,12 @@ class CNN(nn.Module):
 		print('\nIn forward, fc_in.size(): ', all_out.size(), end='')
 		# fc_in.size()) = (batch_size, num_kernels*out_channels) =  torch.Size([16, 3])
 
-		label=nn.Linear(3*1, (batch_size, s, 6))
+        one=nn.Linear(3, s*w)
+        fc_in=one(fc_in)
+
+		print('\nIn forward, fc_in.size(): ', all_out.size(), end='')
+		# fc_in.size()) = 
+
 		logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
 		print('\nIn forward, logits.size(): ', logits.size(), '\n')
