@@ -837,8 +837,9 @@ def _run_epoch(epoch, mode):
     print('\n train_loader\n')
 
     df = trainset
+    input=pd.DataFrame(df['Abstract'])
     target = pd.DataFrame(df['Onehot'])
-    train = data_utils.TensorDataset(torch.Tensor(np.array(df)), torch.Tensor(np.array(target)))
+    train = data_utils.TensorDataset(torch.Tensor(np.array(input)), torch.Tensor(np.array(target)))
     train_loader = data_utils.DataLoader(train, batch_size = 10, shuffle = True)
 
     for idx, batch in enumerate(train_loader):
