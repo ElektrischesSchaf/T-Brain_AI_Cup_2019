@@ -676,7 +676,6 @@ class CNN(nn.Module):
 		input = self.word_embeddings(input_sentences)
         b, s, w, e = input.shape
 
-
 		#print('\n input.size() 1: ', input.size(), end='')
 		# input.size() = (batch_size, num_seq, embedding_length) = torch.Size([32, 200, 300])
 
