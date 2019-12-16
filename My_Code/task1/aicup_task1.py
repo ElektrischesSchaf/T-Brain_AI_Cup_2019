@@ -639,9 +639,9 @@ class CNN(nn.Module):
 
 		self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
 		self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False)
-		self.conv1 = nn.Conv2d( in_channels, out_channels, (kernel_heights[0], embedding_length), stride, padding=8)
-		self.conv2 = nn.Conv2d( in_channels, out_channels, (kernel_heights[1], embedding_length), stride, padding)
-		self.conv3 = nn.Conv2d( in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding)
+		self.conv1 = nn.Conv2d( in_channels, out_channels, (kernel_heights[0], embedding_length), stride, padding=0)
+		self.conv2 = nn.Conv2d( in_channels, out_channels, (kernel_heights[1], embedding_length), stride, padding=0)
+		self.conv3 = nn.Conv2d( in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding=0)
 		self.dropout = nn.Dropout(keep_probab)
 		#self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
@@ -686,53 +686,53 @@ class CNN(nn.Module):
 		input = self.word_embeddings(input_sentences)
 		b, s, w, e = input.shape
 
-		print('\n input.size() 1: ', input.size(), end='')
+		print('In forward, input.size() 1: ', input.size(), end='')
 		# input.size() = (batch_size, num_seq, embedding_length) = torch.Size([16, 11, 35, 100])
 
 		#input = input.unsqueeze(1)
 
-		print(', input.size() 2: ', input.size(), end='')
+		print('In forward, input.size() 2: ', input.size(), end='')
 		# input.size() = (batch_size, 1, num_seq, embedding_length) = torch.Size([16, 11, 35, 100])
 
 		input=input.view(b, s*w, e)
 
-		print(', input.size() 3: ', input.size(), end='')
+		print('In forward, input.size() 3: ', input.size(), end='')
         	# torch.Size([16, 385, 100])
 
 		input = input.unsqueeze(1)
 
-		print(', input.size() 4: ', input.size(), end='')
+		print('In forward, input.size() 4: ', input.size(), end='')
         	# torch.Size([16, 1, 385, 100])
 
 		max_out1 = self.conv_block(input, self.conv1, b=b, s=s, w=w)
 
-		print(', max_out1.size(): ', max_out1.size(), end='')
+		print('In forward, max_out1.size(): ', max_out1.size(), end='')
 		# max_out1.size() =  torch.Size([16, 1])
 
 		max_out2 = self.conv_block(input, self.conv2, b=b, s=s, w=w)
 
-		print(', max_out2.size(): ', max_out2.size(), end='')
+		print('In forward, max_out2.size(): ', max_out2.size(), end='')
 		# max_out2.size() =  torch.Size([16, 1])
 
 		max_out3 = self.conv_block(input, self.conv3, b=b, s=s, w=w)
 
-		print(', max_out3.size(): ', max_out3.size(), end='')
+		print('In forward, max_out3.size(): ', max_out3.size(), end='')
 		# max_out3.size() =  torch.Size([16, 1])
 
 		all_out = torch.cat((max_out1, max_out2, max_out3), 1)
 
-		print(', all_out.size(): ', all_out.size(), end='')
+		print('In forward, all_out.size(): ', all_out.size(), end='')
 		# all_out.size() = (batch_size, num_kernels*out_channels) = torch.Size([16, 3])
 
 		fc_in = self.dropout(all_out)
 
-		print(', fc_in.size(): ', all_out.size(), end='')
+		print('In forward, fc_in.size(): ', all_out.size(), end='')
 		# fc_in.size()) = (batch_size, num_kernels*out_channels) =  torch.Size([16, 3])
 
 		label=nn.Linear(3*1, (batch_size, s, 6))
 		logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
-		print(', logits.size(): ', logits.size(), '\n')
+		print('In forward, logits.size(): ', logits.size(), '\n')
 		# logits.size() = ( batch_size, output_size)  = torch.Size([, 2])
 
 		return logits
