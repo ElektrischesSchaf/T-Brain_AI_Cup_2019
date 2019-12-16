@@ -558,9 +558,9 @@ class AbstractDataset(Dataset):
 # In[ ]:
 
 
-#trainData = AbstractDataset(train, PAD_TOKEN, max_len = 64)
-#validData = AbstractDataset(valid, PAD_TOKEN, max_len = 64)
-#testData = AbstractDataset(test, PAD_TOKEN, max_len = 64)
+trainData = AbstractDataset(trainset, PAD_TOKEN, max_len = 64)
+validData = AbstractDataset(validset, PAD_TOKEN, max_len = 64)
+testData = AbstractDataset(testset, PAD_TOKEN, max_len = 64)
 
 #print('type of trainData', type(trainData), '\n')
 #print('type of validData', type(validData), '\n')
