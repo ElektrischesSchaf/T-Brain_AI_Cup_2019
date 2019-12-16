@@ -143,6 +143,7 @@ dataset.to_csv(os.path.join(CWD,'data/testset.csv'),index=False)
 
 
 # New 2019-12-16
+dataset = pd.read_csv('data/trainset.csv', dtype=str)
 sent_list = []
 label_list = []
 for i in dataset.iterrows():
