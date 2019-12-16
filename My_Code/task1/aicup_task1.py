@@ -834,7 +834,7 @@ def _run_epoch(epoch, mode):
     #train_iter, valid_iter, test_iter = data.BucketIterator.splits((trainset, validset, testset), batch_size=32, sort_key=lambda x: len(x.text), repeat=False, shuffle=True)
     print('\n train_loader\n')
 
-    df = pd.read_csv('trainset.csv')
+    df = pd.read_csv('data/trainset.csv')
     target = pd.DataFrame(df['Onehot'])
     train = data_utils.TensorDataset(torch.Tensor(np.array(df)), torch.Tensor(np.array(target)))
     train_loader = data_utils.DataLoader(train, batch_size = 10, shuffle = True)
