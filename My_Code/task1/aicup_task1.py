@@ -92,6 +92,8 @@ config_fname = write_config(os.path.join(CWD,"config"), True)
 dataset = pd.read_csv( os.path.join(CWD,'data/task1_trainset.csv'), dtype=str)
 
 
+
+
 # In[ ]:
 
 
@@ -122,13 +124,12 @@ dataset.head()
 
 # In[ ]:
 
-
+'''
 # set test_size=0.1 for validation split
 trainset, validset = train_test_split(dataset, test_size=0.1, random_state=42)
-
 trainset.to_csv(os.path.join(CWD,'data/trainset.csv'),index=False)
 validset.to_csv(os.path.join(CWD,'data/validset.csv'),index=False)
-
+'''
 
 # In[ ]:
 
@@ -147,6 +148,40 @@ for i in range(len(dataset['Abstract'])):
 
 dataset.to_csv(os.path.join(CWD,'data/testset.csv'),index=False)
 
+
+# New 2019-12-16
+sent_list = []
+label_list = []
+for i in dataset.iterrows():
+    # remove $$$ and append to sent_list
+    
+    sent_list += i[1]['Abstract'].split('$$$')
+    label_list += i[1]['Task 1'].split(' ')
+
+df = pd.DataFrame({'Abstract': sent_list, 'Label': label_list})
+
+
+def label_to_onehot(labels):
+    """ Convert label to onehot .
+        Args:
+            labels (string): sentence's labels.
+        Return:
+            outputs (onehot list): sentence's onehot label.
+    """
+    label_dict = {'BACKGROUND': 0, 'OBJECTIVES':1, 'METHODS':2, 'RESULTS':3, 'CONCLUSIONS':4, 'OTHERS':5}
+    onehot = [0,0,0,0,0,0]
+    for l in labels.split('/'):
+        onehot[label_dict[l]] = 1
+    return tuple(onehot)
+
+df['Onehot'] = df['Label'].apply(label_to_onehot)
+
+
+df = df.loc[:, ['Abstract', 'Onehot']]
+
+df.rename(columns={'Abstract': 0, 'Onehot': 1})
+
+trainset, validset = train_test_split(df, test_size=0.1, random_state=42)
 
 # ### Collect words and create the vocabulary set
 
@@ -430,14 +465,14 @@ def preprocess_sample(data, word_dict):
 
 # In[ ]:
 
-
+'''
 print('[INFO] Start processing trainset...')
 train = get_dataset(os.path.join(CWD,'data/trainset.csv'), word_dict, n_workers=4)
 print('[INFO] Start processing validset...')
 valid = get_dataset(os.path.join(CWD,'data/validset.csv'), word_dict, n_workers=4)
 print('[INFO] Start processing testset...')
 test = get_dataset(os.path.join(CWD,'data/testset.csv'), word_dict, n_workers=4)
-
+'''
 
 # ### Create a dataset class for the abstract dataset
 # `torch.utils.data.Dataset` is an abstract class representing a dataset.<br />Your custom dataset should inherit Dataset and override the following methods:
@@ -509,16 +544,12 @@ class AbstractDataset(Dataset):
 
 # In[ ]:
 
-
-trainData = AbstractDataset(train, PAD_TOKEN, max_len = 64)
-
-
 # In[ ]:
 
 
-trainData = AbstractDataset(train, PAD_TOKEN, max_len = 64)
-validData = AbstractDataset(valid, PAD_TOKEN, max_len = 64)
-testData = AbstractDataset(test, PAD_TOKEN, max_len = 64)
+#trainData = AbstractDataset(train, PAD_TOKEN, max_len = 64)
+#validData = AbstractDataset(valid, PAD_TOKEN, max_len = 64)
+#testData = AbstractDataset(test, PAD_TOKEN, max_len = 64)
 
 print('type of trainData', type(trainData), '\n')
 print('type of validData', type(validData), '\n')
