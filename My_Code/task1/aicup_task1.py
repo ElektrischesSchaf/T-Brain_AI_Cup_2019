@@ -146,6 +146,63 @@ dataset.to_csv(os.path.join(CWD,'data/testset.csv'),index=False)
 testset = pd.read_csv('data/testset.csv', dtype=str)
 
 
+from multiprocessing import Pool
+from nltk.tokenize import word_tokenize
+
+def collect_words(data_path, n_workers=4):
+    df = pd.read_csv(data_path, dtype=str)
+        
+    # create a list for storing sentences
+    sent_list = []
+    for i in df.iterrows():
+        # remove $$$ and append to sent_list
+        sent_list += i[1]['Abstract'].split('$$$')
+
+    # Put all list in the same chunk
+    chunks = [
+        ' '.join(sent_list[i:i + len(sent_list) // n_workers])
+        for i in range(0, len(sent_list), len(sent_list) // n_workers)
+    ]
+    with Pool(n_workers) as pool:
+        # word_tokenize for word-word separation
+        chunks = pool.map_async(word_tokenize, chunks)
+
+        # extract words
+        words = set(sum(chunks.get(), []))
+        
+    return words
+    '''
+    print(words)
+    {'scrambling',
+    'fitbit',
+    'x-y',
+    'usv',
+    'feeds',
+    'ganglia',
+    'reconciling',
+    'hack',
+    'multi-modality',
+    'physics',
+    'compartment',
+    'pre-publication',
+    'sensitivity-based',
+    'hindex',
+    'lpi',
+    'astor4android',
+    'downstream',
+    'representation/estimation',
+    'pull-in',
+    '10^60',
+    'proof-program',
+    'cross-checking',
+    'sub-block',
+    'multi-player',
+    'wsns',
+    'uncommon',
+    'un-normalized',
+    ...
+    '''
+
 words = set()
 words |= collect_words(os.path.join(CWD,'data/trainset.csv'))
 
@@ -243,72 +300,6 @@ trainset, validset = train_test_split(df, test_size=0.1, random_state=42)
 # In[ ]:
 
 
-from multiprocessing import Pool
-from nltk.tokenize import word_tokenize
-
-def collect_words(data_path, n_workers=4):
-    df = pd.read_csv(data_path, dtype=str)
-        
-    # create a list for storing sentences
-    sent_list = []
-    for i in df.iterrows():
-        # remove $$$ and append to sent_list
-        sent_list += i[1]['Abstract'].split('$$$')
-
-    # Put all list in the same chunk
-    chunks = [
-        ' '.join(sent_list[i:i + len(sent_list) // n_workers])
-        for i in range(0, len(sent_list), len(sent_list) // n_workers)
-    ]
-    with Pool(n_workers) as pool:
-        # word_tokenize for word-word separation
-        chunks = pool.map_async(word_tokenize, chunks)
-
-        # extract words
-        words = set(sum(chunks.get(), []))
-        
-    return words
-    '''
-    print(words)
-    {'scrambling',
-    'fitbit',
-    'x-y',
-    'usv',
-    'feeds',
-    'ganglia',
-    'reconciling',
-    'hack',
-    'multi-modality',
-    'physics',
-    'compartment',
-    'pre-publication',
-    'sensitivity-based',
-    'hindex',
-    'lpi',
-    'astor4android',
-    'downstream',
-    'representation/estimation',
-    'pull-in',
-    '10^60',
-    'proof-program',
-    'cross-checking',
-    'sub-block',
-    'multi-player',
-    'wsns',
-    'uncommon',
-    'un-normalized',
-    ...
-    '''
-
-
-# In[ ]:
-
-
-words = set()
-words |= collect_words(os.path.join(CWD,'data/trainset.csv'))
-
-
-# In[ ]:
 
 
 
