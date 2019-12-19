@@ -29,7 +29,7 @@ from tqdm import trange
 
 from gensim.parsing import remove_stopwords
 
-from google.colab import drive
+#from google.colab import drive
 import os
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -114,7 +114,7 @@ df.head()
 
 trainset, validset = train_test_split(df, test_size=0.1, random_state=42)
 
-!pip install simpletransformers
+#pip install simpletransformers
 
 from simpletransformers.classification import MultiLabelClassificationModel
 
