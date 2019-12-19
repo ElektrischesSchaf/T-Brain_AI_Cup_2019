@@ -17,3 +17,5 @@ Sample_Code/task2/*.ini
 Sample_Code/task2/*.pkl
 My_Code/task2/*.pkl
 *.DS_Store
+cache/
+runs/
