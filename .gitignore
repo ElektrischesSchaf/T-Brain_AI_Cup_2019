@@ -16,4 +16,4 @@ Sample_Code/task2/task2_submission_*.csv
 Sample_Code/task2/*.ini
 Sample_Code/task2/*.pkl
 My_Code/task2/*.pkl
-.DS_Store
+*.DS_Store
