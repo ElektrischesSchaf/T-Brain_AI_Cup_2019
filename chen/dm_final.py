@@ -68,7 +68,7 @@ dataset['Abstract'] = dataset['Abstract'].str.lower()
 #     dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
 
-dataset.to_csv('../Sample_Code/task1/data/testset.csv', index=False)
+dataset = pd.read_csv('../Sample_Code/task1/data/trainset.csv', dtype=str)
 
 
 sent_list = []
@@ -162,7 +162,7 @@ model_outputs
 # Load saved model from 'outputs/'
 # model = MultiLabelClassificationModel('roberta', 'outputs/')
 
-dataset = pd.read_csv('../Sample_Code/task1/data/trainset.csv', dtype=str)
+testset = pd.read_csv('../Sample_Code/task1/data/testset.csv', dtype=str)
 
 sent_list = []
 sid_list = []
