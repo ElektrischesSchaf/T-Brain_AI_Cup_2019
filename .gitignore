@@ -2,6 +2,7 @@
 /.vscode
 glove/
 My_Code/task1/test_experiment/
+My_Code/task1/model/
 *.ini
 *.pkl
 Sample_Code/task1/*.pkl
