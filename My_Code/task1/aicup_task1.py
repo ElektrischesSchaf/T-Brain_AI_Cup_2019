@@ -74,7 +74,7 @@ embedding_dim = 100
 hidden_dim = 512
 learning_rate = 1e-4
 max_epoch = 10
-batch_size = 1
+batch_size = 16
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
@@ -491,10 +491,8 @@ class AbstractDataset(Dataset):
             if 'Label' in data:
                 pad_label = data['Label']
                 pad_label.extend([[0]*6]*(max_sent-len(pad_label)))
-                
                 batch_label.append(pad_label)
 
-        '''
         print('In class AbstractDataset(Dataset): \n')
         print('len of batch_abstract', len(batch_abstract), '\n') # 16
         print('len of batch_label', len(batch_label), '\n') # 16
@@ -503,7 +501,7 @@ class AbstractDataset(Dataset):
         print('cols of batch_abstract[0]', len(batch_abstract[0]), ' ', 'cols of batch_label[0]', len(batch_label[0]), '\n')
         print('max_sent = ', str(max_sent), ' ', 'max_len = ', str(max_len), '\n')
         print('shape of torch.LongTensor(batch_abstract)', torch.LongTensor(batch_abstract).shape, ' shape of torch.FloatTensor(batch_label)', torch.FloatTensor(batch_label).shape, '\n')
-        '''
+
         return torch.LongTensor(batch_abstract), torch.FloatTensor(batch_label), sent_len
 
 
