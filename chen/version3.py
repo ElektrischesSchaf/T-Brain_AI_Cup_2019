@@ -55,8 +55,7 @@ trainset, validset = train_test_split(dataset, test_size=0.1, random_state=42)
 trainset.to_csv('../Sample_Code/task1/data/trainset.csv', index=False)
 validset.to_csv('../Sample_Code/task1/data/validset.csv', index=False)
 
-dataset = pd.read_csv('data/task1_public_testset.csv', dtype=str)
-
+dataset = pd.read_csv('../Sample_Code/task1/data/task1_public_testset.csv', dtype=str)
 dataset.drop('Title',axis=1,inplace=True)
 dataset.drop('Categories',axis=1,inplace=True)
 dataset.drop('Created Date',axis=1, inplace=True)
