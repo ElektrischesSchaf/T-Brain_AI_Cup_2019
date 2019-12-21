@@ -71,24 +71,7 @@ for i in range(len(dataset['Abstract'])):
 
 dataset.to_csv('../Sample_Code/task1/data/testset.csv', index=False)
 
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
 dataset = pd.read_csv('../Sample_Code/task1/data/trainset.csv', dtype=str)
-
-
-# In[ ]:
-
-
-dataset.head()
-
 
 # In[ ]:
 
@@ -188,31 +171,9 @@ model.train_model(trainset)
 result, model_outputs, wrong_predictions = model.eval_model(validset)
 
 
-# In[ ]:
-
-
 model_outputs
 
-
-# In[ ]:
-
-
 result
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
 
 
 model = MultiLabelClassificationModel('roberta', 'outputs/')
@@ -257,32 +218,17 @@ for index, row in testset.iterrows():
     #     break
 
 
-# In[ ]:
-
 
 len(sent_list), len(sid_list)
-
-
-# In[ ]:
 
 
 preds, outputs = model.predict(sent_list)
 
 
-# In[ ]:
-
-
 len(preds)
 
 
-# In[ ]:
-
-
 preds
-
-
-# In[ ]:
-
 
 outputs
 
@@ -351,7 +297,7 @@ submit_df.tail()
 # In[ ]:
 
 
-submit_df.to_csv('submit2.csv', index=False)
+submit_df.to_csv('submit_version_1.csv', index=False)
 
 
 # In[ ]:
