@@ -714,7 +714,7 @@ class CNN(nn.Module):
 		#print('\nIn forward, fc_in.size() 1: ', fc_in.size(), end='')
 		# fc_in.size()) = (batch_size, num_kernels*out_channels)
 
-		one=nn.Linear( 3*15, 6)
+		one=nn.Linear( self.out_channels * self.kernel_heights, 6)
 		one.to(device)
 		fc_in.to(device)
 		fc_in=one(fc_in)
@@ -855,7 +855,7 @@ def save(epoch):
 
 # CNN model
 # batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 1, 15, [3, 3, 3], 1, 0, 0.6, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 1, 30, [3, 3, 3, 3, 3,3], 1, 0, 0.6, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
