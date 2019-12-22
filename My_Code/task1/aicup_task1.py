@@ -656,7 +656,7 @@ class CNN(nn.Module):
 		#print(' activation.size()[2]= ', activation.size()[2], end='')
 		# activation.size()[2]=
 
-		max_out=F.max_pool1d(activation, 1)
+		max_out=F.max_pool1d(activation, activation.size()[2])
 		#print(' 1 max_out.size()= ', max_out.size(), end=' ')
 		# maxpool_out.size() = (batch_size, out_channels, 1)
         
@@ -879,7 +879,7 @@ def save(epoch):
 
 # CNN model
 # batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 1, 50, [3, 3, 3], 1, 0, 0.9, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 1, 50, [9, 7, 5], 1, 0, 0.9, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
