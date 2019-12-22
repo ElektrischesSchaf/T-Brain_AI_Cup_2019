@@ -687,31 +687,31 @@ class CNN(nn.Module):
 		input = input.unsqueeze(1)
 
 		print('\nIn forward, input.size() 3: ', input.size(), end='')
-        # torch.Size = (batch_size*num of sent,1 , num of words, embedding_length)
+        # torch.Size = (batch_size * num of sent, 1, num of words, embedding_length)
 
 		max_out1 = self.conv_block(input, self.conv1, b=b, s=s, w=w)
 
 		print('\nIn forward, max_out1.size(): ', max_out1.size(), end='')
-		# max_out1.size() =  
+		# max_out1.size() =  (batch_size * num of sent, out channels )
 
 		max_out2 = self.conv_block(input, self.conv2, b=b, s=s, w=w)
 
 		print('\nIn forward, max_out2.size(): ', max_out2.size(), end='')
-		# max_out2.size() = 
+		# max_out2.size() =  (batch_size * num of sent, out channels )
 
 		max_out3 = self.conv_block(input, self.conv3, b=b, s=s, w=w)
 
 		print('\nIn forward, max_out3.size(): ', max_out3.size(), end='')
-		# max_out3.size() = 
+		# max_out3.size() =  (batch_size * num of sent, out channels )
 
 		all_out = torch.cat((max_out1, max_out2, max_out3), 1)
 
 		print('\nIn forward, all_out.size(): ', all_out.size(), end='')
-		# all_out.size() = (batch_size, num_kernels*out_channels) = torch.Size([16, 3])
+		# all_out.size() = (batch_size * num of sent, num_kernels * out_channels)
 
 		fc_in = self.dropout(all_out)
 
-		print('\nIn forward, fc_in.size(): ', fc_in.size(), end='')
+		print('\nIn forward, fc_in.size() 1: ', fc_in.size(), end='')
 		# fc_in.size()) = (batch_size, num_kernels*out_channels) =  torch.Size([16, 3])
 
 		one=nn.Linear( 6, 6*s)
@@ -719,7 +719,7 @@ class CNN(nn.Module):
 		fc_in.to(device)
 		fc_in=one(fc_in)
 
-		print('\nIn forward, fc_in.size(): ', fc_in.size(), end='')
+		print('\nIn forward, fc_in.size() 2: ', fc_in.size(), end='')
 		# fc_in.size()) = (16, s*w)
 
 		#logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
