@@ -714,10 +714,10 @@ class CNN(nn.Module):
 		#print('\nIn forward, fc_in.size() 1: ', fc_in.size(), end='')
 		# fc_in.size()) = (batch_size, num_kernels*out_channels)
 
-        one=nn.Linear( 3*15, 6)
-        one.to(device)
-        fc_in.to(device)
-        fc_in=one(fc_in)
+		one=nn.Linear( 3*15, 6)
+		one.to(device)
+		fc_in.to(device)
+		fc_in=one(fc_in)
 
 		fc_in=fc_in.view( b, s, 6)
 
