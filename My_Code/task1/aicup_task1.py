@@ -73,8 +73,8 @@ def write_config(filename, with_time=False):
 embedding_dim = 100
 hidden_dim = 512
 learning_rate = 1e-4
-max_epoch = 10
-batch_size = 16
+max_epoch = 25
+batch_size = 1
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
