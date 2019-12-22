@@ -492,7 +492,7 @@ class AbstractDataset(Dataset):
                 pad_label = data['Label']
                 pad_label.extend([[0]*6]*(max_sent-len(pad_label)))
                 batch_label.append(pad_label)
-
+        '''
         print('In class AbstractDataset(Dataset): \n')
         print('len of batch_abstract', len(batch_abstract), '\n') # 16
         print('len of batch_label', len(batch_label), '\n') # 16
@@ -501,7 +501,7 @@ class AbstractDataset(Dataset):
         print('cols of batch_abstract[0]', len(batch_abstract[0]), ' ', 'cols of batch_label[0]', len(batch_label[0]), '\n')
         print('max_sent = ', str(max_sent), ' ', 'max_len = ', str(max_len), '\n')
         print('shape of torch.LongTensor(batch_abstract)', torch.LongTensor(batch_abstract).shape, ' shape of torch.FloatTensor(batch_label)', torch.FloatTensor(batch_label).shape, '\n')
-
+        '''
         return torch.LongTensor(batch_abstract), torch.FloatTensor(batch_label), sent_len
 
 
@@ -677,32 +677,32 @@ class CNN(nn.Module):
 		b, s, w, e = input.shape
 
 		print('\nIn forward, input.size() 1: ', input.size(), end='')
-		# input.size() = (batch_size, num_seq, embedding_length) = torch.Size([16, 11, 35, 100])
+		# input.size() = (batch_size, num of sent, num of words, embedding_length) = torch.Size([16, 11, 35, 100])
 
-		input=input.view(b, s*w, e)
+		input=input.view(b*s, w, e)
 
-		print('\nIn forward, input.size() 3: ', input.size(), end='')
-        	# torch.Size([16, 385, 100])
+		print('\nIn forward, input.size() 2: ', input.size(), end='')
+        # torch.Size = (batch_size*num of sent, num of words, embedding_length)
 
 		input = input.unsqueeze(1)
 
-		print('\nIn forward, input.size() 4: ', input.size(), end='')
-        	# torch.Size([16, 1, 385, 100])
+		print('\nIn forward, input.size() 3: ', input.size(), end='')
+        # torch.Size = (batch_size*num of sent,1 , num of words, embedding_length)
 
 		max_out1 = self.conv_block(input, self.conv1, b=b, s=s, w=w)
 
 		print('\nIn forward, max_out1.size(): ', max_out1.size(), end='')
-		# max_out1.size() =  torch.Size([16, 1])
+		# max_out1.size() =  
 
 		max_out2 = self.conv_block(input, self.conv2, b=b, s=s, w=w)
 
 		print('\nIn forward, max_out2.size(): ', max_out2.size(), end='')
-		# max_out2.size() =  torch.Size([16, 1])
+		# max_out2.size() = 
 
 		max_out3 = self.conv_block(input, self.conv3, b=b, s=s, w=w)
 
 		print('\nIn forward, max_out3.size(): ', max_out3.size(), end='')
-		# max_out3.size() =  torch.Size([16, 1])
+		# max_out3.size() = 
 
 		all_out = torch.cat((max_out1, max_out2, max_out3), 1)
 
