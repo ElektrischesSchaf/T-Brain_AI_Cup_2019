@@ -728,7 +728,7 @@ class CNN(nn.Module):
 
 		#logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
-		logits=fc_in
+		logits=torch.sigmoid(fc_in)
 
 		#two=nn.Linear(s*w, 6)
 		#two.to(device)
