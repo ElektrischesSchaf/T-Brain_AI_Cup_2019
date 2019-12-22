@@ -74,7 +74,7 @@ embedding_dim = 100
 hidden_dim = 512
 learning_rate = 1e-4
 max_epoch = 10
-batch_size = 16
+batch_size = 2
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
@@ -676,42 +676,42 @@ class CNN(nn.Module):
 		input = self.word_embeddings(input_sentences)
 		b, s, w, e = input.shape
 
-		print('\nIn forward, input.size() 1: ', input.size(), end='')
+		#print('\nIn forward, input.size() 1: ', input.size(), end='')
 		# input.size() = (batch_size, num of sent, num of words, embedding_length) = torch.Size([16, 11, 35, 100])
 
 		input=input.view(b*s, w, e)
 
-		print('\nIn forward, input.size() 2: ', input.size(), end='')
+		#print('\nIn forward, input.size() 2: ', input.size(), end='')
         # torch.Size = (batch_size*num of sent, num of words, embedding_length)
 
 		input = input.unsqueeze(1)
 
-		print('\nIn forward, input.size() 3: ', input.size(), end='')
+		#print('\nIn forward, input.size() 3: ', input.size(), end='')
         # torch.Size = (batch_size * num of sent, 1, num of words, embedding_length)
 
 		max_out1 = self.conv_block(input, self.conv1, b=b, s=s, w=w)
 
-		print('\nIn forward, max_out1.size(): ', max_out1.size(), end='')
+		#print('\nIn forward, max_out1.size(): ', max_out1.size(), end='')
 		# max_out1.size() =  (batch_size * num of sent, out channels )
 
 		max_out2 = self.conv_block(input, self.conv2, b=b, s=s, w=w)
 
-		print('\nIn forward, max_out2.size(): ', max_out2.size(), end='')
+		#print('\nIn forward, max_out2.size(): ', max_out2.size(), end='')
 		# max_out2.size() =  (batch_size * num of sent, out channels )
 
 		max_out3 = self.conv_block(input, self.conv3, b=b, s=s, w=w)
 
-		print('\nIn forward, max_out3.size(): ', max_out3.size(), end='')
+		#print('\nIn forward, max_out3.size(): ', max_out3.size(), end='')
 		# max_out3.size() =  (batch_size * num of sent, out channels )
 
 		all_out = torch.cat((max_out1, max_out2, max_out3), 1)
 
-		print('\nIn forward, all_out.size(): ', all_out.size(), end='')
+		#print('\nIn forward, all_out.size(): ', all_out.size(), end='')
 		# all_out.size() = (batch_size * num of sent, num_kernels * out_channels)
 
 		fc_in = self.dropout(all_out)
 
-		print('\nIn forward, fc_in.size() 1: ', fc_in.size(), end='')
+		#print('\nIn forward, fc_in.size() 1: ', fc_in.size(), end='')
 		# fc_in.size()) = (batch_size, num_kernels*out_channels)
 
 		'''
@@ -857,7 +857,7 @@ def save(epoch):
 
 # CNN model
 # batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 1, 2, [9,7,5], 1, 0, 0.6, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 1, 2, [9,7,5], 1, 0, 0.9, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
