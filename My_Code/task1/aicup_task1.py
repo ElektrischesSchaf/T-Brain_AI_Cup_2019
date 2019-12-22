@@ -656,7 +656,7 @@ class CNN(nn.Module):
 		#print(' activation.size()[2]= ', activation.size()[2], end='')
 		# activation.size()[2]=
 
-		max_out=F.max_pool1d(activation, activation.size()[2])
+		max_out=F.max_pool1d(activation, 1)
 		#print(' 1 max_out.size()= ', max_out.size(), end=' ')
 		# maxpool_out.size() = (batch_size, out_channels, 1)
         
@@ -696,12 +696,12 @@ class CNN(nn.Module):
 		input=input.view(b*s, w, e)
 
 		#print('\nIn forward, input.size() 2: ', input.size(), end='')
-        	# torch.Size = (batch_size*num of sent, num of words, embedding_length)
+		# torch.Size = (batch_size*num of sent, num of words, embedding_length)
 
 		input = input.unsqueeze(1)
 
 		#print('\nIn forward, input.size() 3: ', input.size(), end='')
-	        # torch.Size = (batch_size * num of sent, 1, num of words, embedding_length)
+		# torch.Size = (batch_size * num of sent, 1, num of words, embedding_length)
 
 		max_out1 = self.conv_block(input, self.conv1, b=b, s=s, w=w)
 
