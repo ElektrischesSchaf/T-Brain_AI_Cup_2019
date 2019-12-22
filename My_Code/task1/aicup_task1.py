@@ -652,7 +652,7 @@ class CNN(nn.Module):
 
 		return max_out
 
-	def forward(self, input_sentences, batch_size=batch_size):
+	def forward(self, input_sentences, batch_size=None):
 
 		"""
 		The idea of the Convolutional Neural Netwok for Text Classification is very simple. We perform convolution operation on the embedding matrix 
@@ -682,12 +682,12 @@ class CNN(nn.Module):
 		input=input.view(b*s, w, e)
 
 		#print('\nIn forward, input.size() 2: ', input.size(), end='')
-        # torch.Size = (batch_size*num of sent, num of words, embedding_length)
+        	# torch.Size = (batch_size*num of sent, num of words, embedding_length)
 
 		input = input.unsqueeze(1)
 
 		#print('\nIn forward, input.size() 3: ', input.size(), end='')
-        # torch.Size = (batch_size * num of sent, 1, num of words, embedding_length)
+	        # torch.Size = (batch_size * num of sent, 1, num of words, embedding_length)
 
 		max_out1 = self.conv_block(input, self.conv1, b=b, s=s, w=w)
 
@@ -714,7 +714,7 @@ class CNN(nn.Module):
 		#print('\nIn forward, fc_in.size() 1: ', fc_in.size(), end='')
 		# fc_in.size()) = (batch_size, num_kernels*out_channels)
 
-		one=nn.Linear( self.out_channels * self.kernel_heights, 6)
+		one=nn.Linear( self.out_channels * len(self.kernel_heights), 6) # (num of out channels * num of conv. layers, num of classes)
 		one.to(device)
 		fc_in.to(device)
 		fc_in=one(fc_in)
@@ -855,7 +855,7 @@ def save(epoch):
 
 # CNN model
 # batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 1, 15, [3, 3, 3], 1, 0, 0.6, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 1, 50, [3, 3, 3], 1, 0, 0.9, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
