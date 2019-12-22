@@ -209,7 +209,7 @@ private_testset.head()
 submit_df = pd.concat([submit_df, private_testset])
 submit_df.tail()
 
-submit_df.to_csv('submit_version_3.csv', index=False)
+submit_df.to_csv('submit_version_2.csv', index=False)
 
 test_df = pd.DataFrame({'Abstract': sent_list})
 
