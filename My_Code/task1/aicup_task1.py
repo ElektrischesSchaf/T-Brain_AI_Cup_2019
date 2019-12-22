@@ -74,7 +74,7 @@ embedding_dim = 100
 hidden_dim = 512
 learning_rate = 1e-4
 max_epoch = 10
-batch_size = 2
+batch_size = 16
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
@@ -723,7 +723,7 @@ class CNN(nn.Module):
 		'''
 		fc_in=fc_in.view( b, s, 6)
 
-		print('\nIn forward, fc_in.size() 2: ', fc_in.size(), end='')
+		#print('\nIn forward, fc_in.size() 2: ', fc_in.size(), end='')
 		# fc_in.size()) =
 
 		#logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
@@ -836,7 +836,7 @@ def _run_epoch(epoch, mode):
 def _run_iter(x,y):
     abstract = x.to(device)
     labels = y.to(device)
-    print('\n\n In _run_iter, ', 'shape of x', x.shape, ' ', 'shape of y', y.shape)
+    #print('\n\n In _run_iter, ', 'shape of x', x.shape, ' ', 'shape of y', y.shape)
     o_labels = model(abstract)
     #print('The output shape: ', o_labels.shape, ' The label shape: ', labels.shape, '\n')
     l_loss = criteria(o_labels, labels)
@@ -857,7 +857,7 @@ def save(epoch):
 
 # CNN model
 # batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 1, 2, [9,7,5], 1, 0, 0.9, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 1, 6, [3, 3, 3], 1, 0, 0.6, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
