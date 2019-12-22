@@ -31,8 +31,8 @@ from gensim.parsing import remove_stopwords
 
 #from google.colab import drive
 import os
-
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 
 dataset = pd.read_csv('../Sample_Code/task1/data/task1_trainset.csv', dtype=str)
 
@@ -56,7 +56,6 @@ trainset.to_csv('../Sample_Code/task1/data/trainset.csv', index=False)
 validset.to_csv('../Sample_Code/task1/data/validset.csv', index=False)
 
 dataset = pd.read_csv('../Sample_Code/task1/data/task1_public_testset.csv', dtype=str)
-
 dataset.drop('Title',axis=1,inplace=True)
 dataset.drop('Categories',axis=1,inplace=True)
 dataset.drop('Created Date',axis=1, inplace=True)
@@ -67,9 +66,9 @@ dataset['Abstract'] = dataset['Abstract'].str.lower()
 # for i in range(len(dataset['Abstract'])):
 #     dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
+dataset.to_csv('../Sample_Code/task1/data/testset.csv', index=False)
 
 dataset = pd.read_csv('../Sample_Code/task1/data/trainset.csv', dtype=str)
-
 
 sent_list = []
 label_list = []
@@ -113,8 +112,6 @@ df.rename(columns={'Abstract': 0, 'Onehot': 1}, inplace=True)
 df.head()
 
 trainset, validset = train_test_split(df, test_size=0.1, random_state=42)
-
-#pip install simpletransformers
 
 from simpletransformers.classification import MultiLabelClassificationModel
 
@@ -212,7 +209,7 @@ private_testset.head()
 submit_df = pd.concat([submit_df, private_testset])
 submit_df.tail()
 
-submit_df.to_csv('submit_version_2.csv', index=False)
+submit_df.to_csv('submit_version_3.csv', index=False)
 
 test_df = pd.DataFrame({'Abstract': sent_list})
 
@@ -225,4 +222,5 @@ test_df.describe()
 
 plt.figure(figsize=(12, 7))
 plt.plot(test_df['num_of_words'], marker='.', linestyle='')
+
 plt.savefig('results_plot.png')
