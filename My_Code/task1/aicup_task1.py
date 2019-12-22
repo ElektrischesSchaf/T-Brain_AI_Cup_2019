@@ -712,19 +712,23 @@ class CNN(nn.Module):
 		fc_in = self.dropout(all_out)
 
 		print('\nIn forward, fc_in.size() 1: ', fc_in.size(), end='')
-		# fc_in.size()) = (batch_size, num_kernels*out_channels) =  torch.Size([16, 3])
+		# fc_in.size()) = (batch_size, num_kernels*out_channels)
 
+        '''
+        # Old methods
 		one=nn.Linear( 6, 6*s)
 		one.to(device)
 		fc_in.to(device)
 		fc_in=one(fc_in)
+        '''
+        fc_in=fc_in.view( b, s, 6)
 
 		print('\nIn forward, fc_in.size() 2: ', fc_in.size(), end='')
-		# fc_in.size()) = (16, s*w)
+		# fc_in.size()) = 
 
 		#logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
-		logits=fc_in.view(batch_size, s , -1)
+		logits=fc_in
 
 		#two=nn.Linear(s*w, 6)
 		#two.to(device)
