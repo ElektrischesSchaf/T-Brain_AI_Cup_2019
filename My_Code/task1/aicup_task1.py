@@ -645,12 +645,23 @@ class CNN(nn.Module):
 
 	def conv_block(self, input, conv_layer, b, s, w):
 
-		conv_out = conv_layer(input) # conv_out.size() = (batch_size, out_channels, dim, 1)        
-        print('\nconv_out.size() = ', conv_out.size(), end=' ')
-		activation = F.relu(conv_out.squeeze(3))# activation.size() = (batch_size, out_channels, dim1)
-        print(' activation.size() = ', activation.size(), end=' ')
-		max_out = F.max_pool1d(activation, activation.size()[2]).squeeze(2)# maxpool_out.size() = (batch_size, out_channels)
-        print(' max_out.size() = ', max_out.size(), '\n')
+		conv_out = conv_layer(input)
+		print('\nconv_out.size()= ', conv_out.size(), end=' ')
+		# conv_out.size() = (batch_size, out_channels, dim, 1) 
+
+		activation = F.relu(conv_out.squeeze(3))
+		print(' activation.size()= ', activation.size(), end=' ')
+		# activation.size() = (batch_size, out_channels, dim)
+
+		print(' activation.size()[2]= ', activation.size()[2], end='')
+
+		max_out=F.max_pool1d(activation, activation.size()[2])
+		print(' 1 max_out.size()= ', max_out.size(), end=' ')
+		# maxpool_out.size() = (batch_size, out_channels)
+        
+		max_out = max_out.squeeze(2)
+		print(' 2 max_out.size()= ', max_out.size(), '\n')
+		# maxpool_out.size() = (batch_size, out_channels)
 
 		return max_out
 
