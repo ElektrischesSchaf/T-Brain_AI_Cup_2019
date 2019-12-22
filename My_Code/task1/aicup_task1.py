@@ -654,10 +654,11 @@ class CNN(nn.Module):
 		# activation.size() = (batch_size, out_channels, dim)
 
 		print(' activation.size()[2]= ', activation.size()[2], end='')
+		# activation.size()[2]=
 
 		max_out=F.max_pool1d(activation, activation.size()[2])
 		print(' 1 max_out.size()= ', max_out.size(), end=' ')
-		# maxpool_out.size() = (batch_size, out_channels)
+		# maxpool_out.size() = (batch_size, out_channels, 1)
         
 		max_out = max_out.squeeze(2)
 		print(' 2 max_out.size()= ', max_out.size(), '\n')
