@@ -991,7 +991,7 @@ def SubmitGenerator(prediction, sampleFile, public=True, filename='prediction.cs
 SubmitGenerator(prediction,
                 os.path.join(CWD,'data/task1_sample_submission.csv'), 
                 True, 
-                os.path.join(CWD,'submission_1106.csv'))
+                os.path.join(CWD,'submission_CNN-2.csv'))
 
 
 # In[ ]:
