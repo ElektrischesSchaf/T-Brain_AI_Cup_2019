@@ -3,8 +3,10 @@
 glove/
 My_Code/task1/test_experiment/
 My_Code/task1/model/
-*.ini
-*.pkl
+My_Code/task1/*.ini
+My_Code/task1/*.pkl
+My_Code/task2/*.pkl
+My_Code/task1/submission_*.csv
 Sample_Code/task1/*.pkl
 Sample_Code/task1/*.ini
 *.ipynb_checkpoints
@@ -16,7 +18,6 @@ Sample_Code/task2/model
 Sample_Code/task2/task2_submission_*.csv
 Sample_Code/task2/*.ini
 Sample_Code/task2/*.pkl
-My_Code/task2/*.pkl
 *.DS_Store
 cache/
 runs/
