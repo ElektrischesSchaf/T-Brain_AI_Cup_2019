@@ -464,24 +464,24 @@ class AbstractDataset(Dataset):
     def __getitem__(self, index):
         return self.data[index]
         
-    def collate_fn(self, datas):
+    def collate_fn(self, datas): # datas = batch, len(datas)=batch_size
         # get max length in this batch
         max_sent = max([len(data['Abstract']) for data in datas])
         max_len = max([min(len(sentence), self.max_len) for data in datas for sentence in data['Abstract']])
         batch_abstract = []
         batch_label = []
         sent_len = []
-        for data in datas:
+        for data in datas: # a data is a row in trainset.csv, a datas is a number of batch_size of rows in trainset.csv
             # padding abstract to make them in same length
-            pad_abstract = []
-            for sentence in data['Abstract']:
+            pad_abstract = [] # pad_abstract is 1D now
+            for sentence in data['Abstract']: # pad_abstract is 2D now
                 if len(sentence) > max_len:
                     pad_abstract.append(sentence[:max_len])
                 else:
                     pad_abstract.append(  sentence+[self.pad_idx]*( max_len-len(sentence) )  )
-            sent_len.append(len(pad_abstract))
+            sent_len.append(len(pad_abstract)) # how many sentences in this row
             pad_abstract.extend([[self.pad_idx]*max_len]*(max_sent-len(pad_abstract)))            
-            batch_abstract.append(pad_abstract)
+            batch_abstract.append(pad_abstract) # batch_abstract is 3D now
             '''
             print('len fo sentence', len(sentence), '\n') 
             print('len of pad_abstract', len(pad_abstract), '\n')
