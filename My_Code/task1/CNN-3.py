@@ -728,20 +728,10 @@ class CNN(nn.Module):
 		#print('\nIn forward, fc_in.size() 1: ', fc_in.size(), end='')
 		# fc_in.size()) = (batch_size, num_kernels*out_channels)
 
-		one=nn.Linear( self.out_channels * len(self.kernel_heights), int((self.out_channels*len(self.kernel_heights))*0.6 )) # (num of out channels * num of conv. layers, num of classes)
+		one=nn.Linear( self.out_channels * len(self.kernel_heights), 6) # (num of out channels * num of conv. layers, num of classes)
 		one.to(device)
 		fc_in.to(device)
 		fc_in=torch.relu(one(fc_in))
-
-		two=nn.Linear( int((self.out_channels*len(self.kernel_heights))*0.6), int((self.out_channels*len(self.kernel_heights))*0.3) )
-		two.to(device)
-		fc_in.to(device)
-		fc_in=torch.relu(two(fc_in))
-
-		three=nn.Linear(int((self.out_channels*len(self.kernel_heights))*0.3) , 6)
-		three.to(device)
-		fc_in.to(device)
-		fc_in=torch.relu(three(fc_in))
 
 		fc_in=fc_in.view( b, s, 6)
 
