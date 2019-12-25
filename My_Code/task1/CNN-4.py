@@ -423,8 +423,9 @@ def preprocess_sample(data, word_dict):
     
     ## convert the labels into one-hot encoding
     if 'Task 1' in data:
-        processed['Label'] = [label_to_onehot(label) for label in data['Task 1'].split(' ')]
-        print('processed[Label]=',processed['Label'] )
+
+        processed['Label'] = [label_to_onehot(label) for label in data['Task 1'].split(' ')] 
+        # processed['Label'] is a 2D list
         
     return processed
 
