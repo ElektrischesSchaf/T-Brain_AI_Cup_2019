@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+# F1-score = 28%, one out channels for each kernel, only one FC layer
+# more adhere to the article Gehrmann2018_Comparing_deep_learning_and_concept_extraction_based_methods_for_patient_phenotyping_from_clinical_narratives
 # In[ ]:
 
 

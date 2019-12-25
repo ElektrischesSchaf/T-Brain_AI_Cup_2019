@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+# F1-score = 28%, multiple out channels, multiple FC layers
 # In[ ]:
 
 
