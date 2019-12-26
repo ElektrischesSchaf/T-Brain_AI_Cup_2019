@@ -444,7 +444,7 @@ def sperate_dict( the_list ):
     output=[]
     for row in  the_list: # row={'Abstract':[[],[],...], 'Label':[[],[],...]}
         #print('row=', row, '\n')
-        if len(row['Abstract'])==len(row['Label']): # suspecious
+        if ('Abstract' in row)and('Label' in row): # suspecious
             for i in range(len(row['Abstract']) ):
                 new_dict={}
                 new_dict['Abstract']=row['Abstract'][i]
