@@ -646,8 +646,7 @@ class CNN(nn.Module):
         self.conv3 = nn.Conv2d( in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding=0)
         self.dropout = nn.Dropout(keep_probab)
         self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
-	def conv_block(self, input, conv_layer):
-
+    def conv_block(self, input, conv_layer):
         conv_out = conv_layer(input)
         #print('\nconv_out.size()= ', conv_out.size(), end=' ')
         # conv_out.size() = (batch_size, out_channels, dim, 1) 
@@ -668,9 +667,7 @@ class CNN(nn.Module):
         # maxpool_out.size() = (batch_size, out_channels)
 
         return max_out
-
-	def forward(self, input_sentences, batch_size=None):
-
+    def forward(self, input_sentences, batch_size=None):
         """
         The idea of the Convolutional Neural Netwok for Text Classification is very simple. We perform convolution operation on the embedding matrix 
         whose shape for each batch is (num_seq, embedding_length) with kernel of varying height but constant width which is same as the embedding_length.
@@ -713,7 +710,7 @@ class CNN(nn.Module):
 
         #print(', max_out3.size(): ', max_out3.size(), end='')
         # max_out3.size() =  torch.Size([32, 1])
-        
+
         all_out = torch.cat((max_out1, max_out2, max_out3), 1)
 
         #print(', all_out.size(): ', all_out.size(), end='')
@@ -733,8 +730,6 @@ class CNN(nn.Module):
         logits=torch.sigmoid(logits)
 
         return logits
-
-
 
 # In[ ]:
 
