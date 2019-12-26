@@ -458,9 +458,6 @@ train=sperate_dict(train)
 valid=sperate_dict(valid)
 test=sperate_dict(test)
 
-print('train_2=', train_2, '\n')
-
-
 # ### Create a dataset class for the abstract dataset
 # `torch.utils.data.Dataset` is an abstract class representing a dataset.<br />Your custom dataset should inherit Dataset and override the following methods:
 # 
