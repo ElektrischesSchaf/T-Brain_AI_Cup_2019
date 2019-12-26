@@ -442,16 +442,14 @@ test = get_dataset(os.path.join(CWD,'data/testset.csv'), word_dict, n_workers=4)
 
 def sperate_dict( the_list ):
     output=[]
-    for row in  the_list:
-        for abstracts in row["Abstract"]:
-            new_dict={}
-            new_dict["Abstract"]=abstracts
-            output+=new_dict
-        for labels in row["Label"]:
-            new_dict={}
-            new_dict["Label"]=labels
-            output+=new_dict
-
+    for row in  the_list: # row={'Abstract':[[],[],...], 'Label':[[],[],...]}
+        #print('row=', row, '\n')
+        if len(row['Abstract'])==len(row['Label']): # suspecious
+            for i in range(len(row['Abstract']) ):
+                new_dict={}
+                new_dict['Abstract']=row['Abstract'][i]
+                new_dict['Label']==row['Label'][i]
+                output+=new_dict
     return output
 
 train_2=sperate_dict(train)
