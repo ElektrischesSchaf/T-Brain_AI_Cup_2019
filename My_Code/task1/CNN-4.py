@@ -627,24 +627,8 @@ class Net(nn.Module):
 # CNN model
 
 class CNN(nn.Module):
-	def __init__(self, batch_size, output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights):
+    def __init__(self, batch_size, output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights):
         super(CNN, self).__init__()
-
-        """
-        Arguments
-        ---------
-        batch_size : Size of each batch which is same as the batch_size of the data returned by the TorchText BucketIterator
-        output_size : 2 = (pos, neg)
-        in_channels : Number of input channels. Here it is 1 as the input data has dimension = (batch_size, num_seq, embedding_length)
-        out_channels : Number of output channels after convolution operation performed on the input matrix
-        kernel_heights : A list consisting of 3 different kernel_heights. Convolution will be performed 3 times and finally results from each kernel_height will be concatenated.
-        keep_probab : Probability of retaining an activation node during dropout operation
-        vocab_size : Size of the vocabulary containing unique words
-        embedding_length : Embedding dimension of GloVe word embeddings
-        weights : Pre-trained GloVe word_embeddings which we will use to create our word_embedding look-up table
-        --------
-        
-        """
         self.batch_size = batch_size
         #self.output_size = output_size
         self.in_channels = in_channels
@@ -662,7 +646,6 @@ class CNN(nn.Module):
         self.conv3 = nn.Conv2d( in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding=0)
         self.dropout = nn.Dropout(keep_probab)
         self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
-
 	def conv_block(self, input, conv_layer):
 
         conv_out = conv_layer(input)
@@ -717,7 +700,7 @@ class CNN(nn.Module):
         # input.size() = (batch_size, 1, num_seq, embedding_length) = torch.Size([32, 1, 200, 300])
 
         max_out1 = self.conv_block(input, self.conv1)
-        
+
         #print(', max_out1.size(): ', max_out1.size(), end='')
         # max_out1.size() =  torch.Size([32, 1])
 
