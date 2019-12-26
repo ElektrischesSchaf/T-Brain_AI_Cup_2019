@@ -71,14 +71,10 @@ def write_config(filename, with_time=False):
 ### Hyperparameters tuning
 ### Run this cell for renewing the hyperparameters
 
-embedding_dim = 100
+embedding_dim = 300
 hidden_dim = 512
 learning_rate = 1e-4
-<<<<<<< HEAD
 max_epoch = 50
-=======
-max_epoch = 200
->>>>>>> a93abd6ca27ecea54af5b0e688e11e3aa8c4a751
 batch_size = 16
 
 # write the hyperparameters into config.ini
@@ -299,7 +295,7 @@ if not os.path.exists('glove'):
 ### Parsing the GloVe word-embeddings file
 # Parse the unzipped file (a .txt file) to build an index that maps words (as strings) to their vector representation (as number vectors)
 
-wordvector_path = 'glove/glove.6B.100d.txt'
+wordvector_path = 'glove/glove.6B.300d.txt'
 embeddings_index = {}
 f = open(wordvector_path)
 for line in f:
@@ -865,7 +861,7 @@ def save(epoch):
 
 # CNN model
 # batch_size,  output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 6, 1, 10, [2, 3, 4, 5, 6], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 6, 1, 15, [2, 3, 4, 5, 6], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
