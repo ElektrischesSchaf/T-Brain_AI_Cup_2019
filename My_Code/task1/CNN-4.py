@@ -849,7 +849,7 @@ def save(epoch):
 
 # CNN model
 # batch_size,  output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 6, 1, 3, [2, 3, 4, 5], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 6, 1, 3, [2, 3, 4], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
