@@ -74,7 +74,7 @@ def write_config(filename, with_time=False):
 embedding_dim = 300
 hidden_dim = 512
 learning_rate = 1e-4
-max_epoch = 10
+max_epoch = 15
 batch_size = 16
 
 # write the hyperparameters into config.ini
@@ -445,14 +445,14 @@ def sperate_dict( the_list ):
     output=[]
     for row in  the_list: # row={'Abstract':[[],[],...], 'Label':[[],[],...]}
         #print('row=', row, '\n')
-        if ('Abstract' in row)and('Label' in row): # suspecious
-            for i in range(len(row['Abstract']) ):
-                new_dict={}
-                print('row= ', row, ' ')
-                print('in Abstact key= ', row['Abstract'][i], '\n in Label key= ', row['Label'][i], '\n')
-                new_dict['Abstract']=[ row['Abstract'][i] ]
-                new_dict['Label']=[ row['Label'][i] ]
-                output.append( new_dict.copy() )
+        #if ('Abstract' in row)and('Label' in row): # suspecious
+        for i in range(len(row['Abstract']) ):
+            new_dict={}
+            print('row= ', row, ' ')
+            print('in Abstact key= ', row['Abstract'][i], '\n in Label key= ', row['Label'][i], '\n')
+            new_dict['Abstract']=[ row['Abstract'][i] ]
+            new_dict['Label']=[ row['Label'][i] ]
+            output.append( new_dict.copy() )
     return output
 
 train=sperate_dict(train)
@@ -914,13 +914,14 @@ dataloader = DataLoader(dataset=testData,
                             num_workers=8)
 trange = tqdm(enumerate(dataloader), total=len(dataloader), desc='Predict')
 prediction = []
+print('1 prediction= ', prediction,'\n')
 for i, (x, y, sent_len) in trange:
     o_labels = model(x.to(device))
     print('In Prediction Cell, o_labels= ', o_labels)
     o_labels = o_labels>0.5
     for idx, o_label in enumerate(o_labels):
         print('In Prediction Cell:', '\n', 'sent_len= ', sent_len,'\n')
-        print('prediction=', prediction,'\n')
+        print('2 prediction= ', prediction,'\n')
         prediction.append(o_label[:sent_len[idx]].to('cpu'))
 prediction = torch.cat(prediction).detach().numpy().astype(int)
 
