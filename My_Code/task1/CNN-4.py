@@ -448,9 +448,9 @@ def sperate_dict( the_list ):
             for i in range(len(row['Abstract']) ):
                 new_dict={}
                 print(row, ' ')
-                print(row['Abstract'][i], '  ' row['Label'][i], '\n')
-                new_dict['Abstract']=row['Abstract'][i]
-                new_dict['Label']==row['Label'][i]
+                print(row['Abstract'][i], '  ', row['Label'][i], '\n')
+                new_dict['Abstract']=[ row['Abstract'][i] ]
+                new_dict['Label']=[ row['Label'][i] ]
                 output+=new_dict
     return output
 
