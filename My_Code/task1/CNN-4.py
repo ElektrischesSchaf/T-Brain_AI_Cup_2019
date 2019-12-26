@@ -74,7 +74,7 @@ def write_config(filename, with_time=False):
 embedding_dim = 300
 hidden_dim = 512
 learning_rate = 1e-4
-max_epoch = 25
+max_epoch = 10
 batch_size = 16
 
 # write the hyperparameters into config.ini
@@ -916,6 +916,7 @@ trange = tqdm(enumerate(dataloader), total=len(dataloader), desc='Predict')
 prediction = []
 for i, (x, y, sent_len) in trange:
     o_labels = model(x.to(device))
+    print('In Prediction Cell, o_labels= ', o_labels)
     o_labels = o_labels>0.5
     for idx, o_label in enumerate(o_labels):
         print('In Prediction Cell:', '\n', 'sent_len= ', sent_len,'\n')
