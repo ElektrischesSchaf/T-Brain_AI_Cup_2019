@@ -71,10 +71,14 @@ def write_config(filename, with_time=False):
 ### Hyperparameters tuning
 ### Run this cell for renewing the hyperparameters
 
-embedding_dim = 300
+embedding_dim = 100
 hidden_dim = 512
 learning_rate = 1e-4
+<<<<<<< HEAD
 max_epoch = 50
+=======
+max_epoch = 200
+>>>>>>> a93abd6ca27ecea54af5b0e688e11e3aa8c4a751
 batch_size = 16
 
 # write the hyperparameters into config.ini
@@ -159,7 +163,7 @@ from nltk.tokenize import word_tokenize
 
 def collect_words(data_path, n_workers=4):
     df = pd.read_csv(data_path, dtype=str)
-        
+
     # create a list for storing sentences
     sent_list = []
     for i in df.iterrows():
@@ -295,7 +299,7 @@ if not os.path.exists('glove'):
 ### Parsing the GloVe word-embeddings file
 # Parse the unzipped file (a .txt file) to build an index that maps words (as strings) to their vector representation (as number vectors)
 
-wordvector_path = 'glove/glove.6B.300d.txt'
+wordvector_path = 'glove/glove.6B.100d.txt'
 embeddings_index = {}
 f = open(wordvector_path)
 for line in f:
