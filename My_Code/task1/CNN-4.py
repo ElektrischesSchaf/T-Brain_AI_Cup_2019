@@ -71,10 +71,10 @@ def write_config(filename, with_time=False):
 ### Hyperparameters tuning
 ### Run this cell for renewing the hyperparameters
 
-embedding_dim = 300
+embedding_dim = 100
 hidden_dim = 512
 learning_rate = 1e-4
-max_epoch = 100
+max_epoch = 200
 batch_size = 16
 
 # write the hyperparameters into config.ini
@@ -295,7 +295,7 @@ if not os.path.exists('glove'):
 ### Parsing the GloVe word-embeddings file
 # Parse the unzipped file (a .txt file) to build an index that maps words (as strings) to their vector representation (as number vectors)
 
-wordvector_path = 'glove/glove.6B.300d.txt'
+wordvector_path = 'glove/glove.6B.100d.txt'
 embeddings_index = {}
 f = open(wordvector_path)
 for line in f:
