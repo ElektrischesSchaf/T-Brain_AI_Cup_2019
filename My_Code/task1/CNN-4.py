@@ -454,9 +454,9 @@ def sperate_dict( the_list ):
                 output.append( new_dict.copy() )
     return output
 
-train_2=sperate_dict(train)
-valid_2=sperate_dict(valid)
-test_2=sperate_dict(test)
+train=sperate_dict(train)
+valid=sperate_dict(valid)
+test=sperate_dict(test)
 
 print('train_2=', train_2, '\n')
 
