@@ -56,7 +56,7 @@ def write_config(filename, with_time=False):
     if with_time == False:
         with open("{}.ini".format(filename), 'w') as configfile:
             config.write(configfile)
-        return 'config'            
+        return 'config'
     else:
         timestr = time.strftime("%Y%m%d_%H%M%S")
         filename = filename + '_' + timestr
@@ -74,7 +74,7 @@ def write_config(filename, with_time=False):
 embedding_dim = 300
 hidden_dim = 512
 learning_rate = 1e-4
-max_epoch = 100
+max_epoch = 50
 batch_size = 16
 
 # write the hyperparameters into config.ini
@@ -111,8 +111,8 @@ dataset.drop('Authors',axis=1,inplace=True)
 dataset['Abstract'] = dataset['Abstract'].str.lower()
 #dataset['Task 1'] = dataset['Task 1'].str.lower()
 
-for i in range(len(dataset['Abstract'])):
-    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
+#for i in range(len(dataset['Abstract'])):
+#    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
 
 # In[ ]:
@@ -143,8 +143,8 @@ dataset.drop('Created Date',axis=1, inplace=True)
 dataset.drop('Authors',axis=1,inplace=True)
 dataset['Abstract'] = dataset['Abstract'].str.lower()
 
-for i in range(len(dataset['Abstract'])):
-    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
+#for i in range(len(dataset['Abstract'])):
+#    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
 dataset.to_csv(os.path.join(CWD,'data/testset.csv'),index=False)
 
@@ -861,7 +861,7 @@ def save(epoch):
 
 # CNN model
 # batch_size,  output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 6, 1, 3, [2, 3, 4, 5, 6], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 6, 1, 10, [2, 3, 4, 5, 6], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
