@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Crack AbstractDataset and make adjustment
+# Crack AbstractDataset and make adjustment by a seperate_dict function
+# Re-write CNN model
 # In[ ]:
 
 
@@ -626,7 +627,7 @@ class Net(nn.Module):
 # CNN model
 
 class CNN(nn.Module):
-	def __init__(self, batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights):
+	def __init__(self, batch_size, output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights):
 		super(CNN, self).__init__()
 
 		"""
@@ -660,9 +661,9 @@ class CNN(nn.Module):
 		self.conv2 = nn.Conv2d( in_channels, out_channels, (kernel_heights[1], embedding_length), stride, padding=0)
 		self.conv3 = nn.Conv2d( in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding=0)
 		self.dropout = nn.Dropout(keep_probab)
-		#self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
+		self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
-	def conv_block(self, input, conv_layer, b, s, w):
+	def conv_block(self, input, conv_layer):
 
 		conv_out = conv_layer(input)
 		#print('\nconv_out.size()= ', conv_out.size(), end=' ')
@@ -705,69 +706,47 @@ class CNN(nn.Module):
 		logits.size() = (batch_size, output_size)
 
 		"""
-
 		input = self.word_embeddings(input_sentences)
-		b, s, w, e = input.shape
 
-		#print('\nIn forward, input.size() 1: ', input.size(), end='')
-		# input.size() = (batch_size, num of sent, num of words, embedding_length) = torch.Size([16, 11, 35, 100])
+		#print('\n input.size() 1: ', input.size(), end='')
+		# input.size() = (batch_size, num_seq, embedding_length) = torch.Size([32, 200, 300])
 
-		input=input.view(b*s, w, e)
+		#input = input.unsqueeze(1)
 
-		#print('\nIn forward, input.size() 2: ', input.size(), end='')
-		# torch.Size = (batch_size*num of sent, num of words, embedding_length)
+		#print(', input.size() 2: ', input.size(), end='')
+		# input.size() = (batch_size, 1, num_seq, embedding_length) = torch.Size([32, 1, 200, 300])
 
-		input = input.unsqueeze(1)
+		max_out1 = self.conv_block(input, self.conv1)
 
-		#print('\nIn forward, input.size() 3: ', input.size(), end='')
-		# torch.Size = (batch_size * num of sent, 1, num of words, embedding_length)
+		#print(', max_out1.size(): ', max_out1.size(), end='')
+		# max_out1.size() =  torch.Size([32, 1])
 
-		max_out1 = self.conv_block(input, self.conv1, b=b, s=s, w=w)
+		max_out2 = self.conv_block(input, self.conv2)
 
-		#print('\nIn forward, max_out1.size(): ', max_out1.size(), end='')
-		# max_out1.size() =  (batch_size * num of sent, out channels )
+		#print(', max_out2.size(): ', max_out2.size(), end='')
+		# max_out2.size() =  torch.Size([32, 1])
 
-		max_out2 = self.conv_block(input, self.conv2, b=b, s=s, w=w)
+		max_out3 = self.conv_block(input, self.conv3)		
 
-		#print('\nIn forward, max_out2.size(): ', max_out2.size(), end='')
-		# max_out2.size() =  (batch_size * num of sent, out channels )
-
-		max_out3 = self.conv_block(input, self.conv3, b=b, s=s, w=w)
-
-		#print('\nIn forward, max_out3.size(): ', max_out3.size(), end='')
-		# max_out3.size() =  (batch_size * num of sent, out channels )
-
+		#print(', max_out3.size(): ', max_out3.size(), end='')
+		# max_out3.size() =  torch.Size([32, 1])
+		
 		all_out = torch.cat((max_out1, max_out2, max_out3), 1)
 
-		#print('\nIn forward, all_out.size(): ', all_out.size(), end='')
-		# all_out.size() = (batch_size * num of sent, num_kernels * out_channels)
+		#print(', all_out.size(): ', all_out.size(), end='')
+		# all_out.size() = (batch_size, num_kernels*out_channels) = torch.Size([32, 3]) 
 
 		fc_in = self.dropout(all_out)
 
-		#print('\nIn forward, fc_in.size() 1: ', fc_in.size(), end='')
-		# fc_in.size()) = (batch_size, num_kernels*out_channels)
+		#print(', fc_in.size(): ', all_out.size(), end='')
+		# fc_in.size()) = (batch_size, num_kernels*out_channels) =  torch.Size([32, 3]) 
 
-		one=nn.Linear( self.out_channels * len(self.kernel_heights), 6) # (num of out channels * num of conv. layers, num of classes)
-		one.to(device)
-		fc_in.to(device)
-		fc_in=torch.relu(one(fc_in))
+		logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
-		fc_in=fc_in.view( b, s, 6)
+		#print(', logits.size(): ', logits.size(), '\n')
+		# logits.size() = ( batch_size, output_size)  = torch.Size([32, 2])
 
-		#print('\nIn forward, fc_in.size() 2: ', fc_in.size(), end='')
-		# fc_in.size()) =
-
-		#logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
-
-		logits=torch.sigmoid(fc_in)
-
-		#two=nn.Linear(s*w, 6)
-		#two.to(device)
-		#logits.to(device)
-		#logits=two(logits)
-
-		#print('\nIn forward, logits.size(): ', logits.size(), '\n')
-		# logits.size() = ( batch_size, output_size)  = torch.Size([, 2])
+        logits=torch.sigmoid(logits)
 
 		return logits
 
@@ -887,8 +866,8 @@ def save(epoch):
 #model = Net(len(word_dict))
 
 # CNN model
-# batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 1, 1, [2, 3, 4], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
+# batch_size,  output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
+model = CNN (batch_size, 6, 1, 1, [2, 3, 4], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
