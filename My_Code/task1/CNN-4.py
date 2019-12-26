@@ -451,7 +451,7 @@ def sperate_dict( the_list ):
                 print(row['Abstract'][i], '  ', row['Label'][i], '\n')
                 new_dict['Abstract']=[ row['Abstract'][i] ]
                 new_dict['Label']=[ row['Label'][i] ]
-                output+=new_dict
+                output+=new_dict.get()
     return output
 
 train_2=sperate_dict(train)
