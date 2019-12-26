@@ -917,14 +917,14 @@ dataloader = DataLoader(dataset=testData,
                             num_workers=8)
 trange = tqdm(enumerate(dataloader), total=len(dataloader), desc='Predict')
 prediction = []
-print('1 prediction= ', prediction,'\n')
+#print('1 prediction= ', prediction,'\n')
 for i, (x, y, sent_len) in trange:
     o_labels = model(x.to(device))
-    print('In Prediction Cell, o_labels= ', o_labels)
+    #print('In Prediction Cell, o_labels= ', o_labels)
     o_labels = o_labels>0.5
     for idx, o_label in enumerate(o_labels):
-        print('In Prediction Cell:', '\n', 'sent_len= ', sent_len,'\n')
-        print('2 prediction= ', prediction,'\n')
+        #print('In Prediction Cell:', '\n', 'sent_len= ', sent_len,'\n')
+        #print('2 prediction= ', prediction,'\n')
         prediction.append(o_label[:sent_len[idx]].to('cpu'))
 prediction = torch.cat(prediction).detach().numpy().astype(int)
 
