@@ -395,6 +395,7 @@ def get_dataset(data_path, word_dict, n_workers=4):
     processed = []
     for result in results:
         processed += result.get()
+        # result.get()= [{'Abstrach': [[XXX],[XXX],...], 'Label':[[XXX],[XXX],...] }, {'Abstract': ...  }, {'Abstract': ...}]
     return processed
 
 def preprocess_samples(dataset, word_dict):

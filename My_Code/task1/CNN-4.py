@@ -440,6 +440,26 @@ valid = get_dataset(os.path.join(CWD,'data/validset.csv'), word_dict, n_workers=
 print('[INFO] Start processing testset...')
 test = get_dataset(os.path.join(CWD,'data/testset.csv'), word_dict, n_workers=4)
 
+def sperate_dict( the_list ):
+    output=[]
+    for row in  the_list:
+        for abstracts in row["Abstract"]:
+            new_dict={}
+            new_dict["Abstract"]=abstracts
+            output+=new_dict
+        for labels in row["Label"]:
+            new_dict={}
+            new_dict["Label"]=labels
+            output+=new_dict
+
+    return output
+
+train_2=sperate_dict(train)
+valid_2=sperate_dict(valid)
+test_2=sperate_dict(test)
+
+print('train_2=', train_2, '\n')
+
 
 # ### Create a dataset class for the abstract dataset
 # `torch.utils.data.Dataset` is an abstract class representing a dataset.<br />Your custom dataset should inherit Dataset and override the following methods:
