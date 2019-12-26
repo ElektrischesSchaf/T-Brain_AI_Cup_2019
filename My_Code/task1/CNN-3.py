@@ -983,7 +983,7 @@ def SubmitGenerator(prediction, sampleFile, public=True, filename='prediction.cs
 SubmitGenerator(prediction,
                 os.path.join(CWD,'data/task1_sample_submission.csv'), 
                 True, 
-                os.path.join(CWD,'submission_CNN-2.csv'))
+                os.path.join(CWD,'submission_CNN-3.csv'))
 
 #get_ipython().run_line_magic('tensorboard', '--logdir=task1/test_experiment')
 tEnd=time.time()

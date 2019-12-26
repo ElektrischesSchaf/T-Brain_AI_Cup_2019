@@ -918,6 +918,8 @@ for i, (x, y, sent_len) in trange:
     o_labels = model(x.to(device))
     o_labels = o_labels>0.5
     for idx, o_label in enumerate(o_labels):
+        print('In Prediction Cell:', '\n', 'sent_len= ', sent_len,'\n')
+        print('prediction=', prediction,'\n')
         prediction.append(o_label[:sent_len[idx]].to('cpu'))
 prediction = torch.cat(prediction).detach().numpy().astype(int)
 
@@ -958,7 +960,7 @@ def SubmitGenerator(prediction, sampleFile, public=True, filename='prediction.cs
 SubmitGenerator(prediction,
                 os.path.join(CWD,'data/task1_sample_submission.csv'), 
                 True, 
-                os.path.join(CWD,'submission_CNN-2.csv'))
+                os.path.join(CWD,'submission_CNN-4.csv'))
 
 #get_ipython().run_line_magic('tensorboard', '--logdir=task1/test_experiment')
 tEnd=time.time()
