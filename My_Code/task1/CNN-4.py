@@ -647,6 +647,8 @@ class CNN(nn.Module):
         self.conv1 = nn.Conv2d( in_channels, out_channels, (kernel_heights[0], embedding_length), stride, padding=0)
         self.conv2 = nn.Conv2d( in_channels, out_channels, (kernel_heights[1], embedding_length), stride, padding=0)
         self.conv3 = nn.Conv2d( in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding=0)
+        self.conv4 = nn.Conv2d( in_channels, out_channels, (kernel_heights[3], embedding_length), stride, padding=0)
+        self.conv5 = nn.Conv2d( in_channels, out_channels, (kernel_heights[4], embedding_length), stride, padding=0)
         self.dropout = nn.Dropout(keep_probab)
         self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
     def conv_block(self, input, conv_layer):
@@ -714,7 +716,17 @@ class CNN(nn.Module):
         #print(', max_out3.size(): ', max_out3.size(), end='')
         # max_out3.size() =  torch.Size([32, 1])
 
-        all_out = torch.cat((max_out1, max_out2, max_out3), 1)
+        max_out4 = self.conv_block(input, self.conv4)
+
+        #print(', max_out4.size(): ', max_out4.size(), end='')
+        # max_out4.size() =  torch.Size([32, 1])
+
+        max_out5 = self.conv_block(input, self.conv5)
+
+        #print(', max_out5.size(): ', max_out5.size(), end='')
+        # max_out5.size() =  torch.Size([32, 1])
+
+        all_out = torch.cat((max_out1, max_out2, max_out3, max_out4, max_out5), 1)
 
         #print(', all_out.size(): ', all_out.size(), end='')
         # all_out.size() = (batch_size, num_kernels*out_channels) = torch.Size([32, 3]) 
@@ -849,7 +861,7 @@ def save(epoch):
 
 # CNN model
 # batch_size,  output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 6, 1, 3, [2, 3, 4], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 6, 1, 3, [2, 3, 4, 5, 6], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
