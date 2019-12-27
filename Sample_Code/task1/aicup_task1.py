@@ -772,7 +772,7 @@ print('Best F1 score ', max([[l['f1'], idx] for idx, l in enumerate(history['val
 
 # fill the epoch of the lowest val_loss to best_model
 best_model = best_epoch
-model.load_state_dict(state_dict=torch.load(os.path.join(CWD,'model_sample_code/'modelmodel.pkl.{}'.format(best_model))))
+model.load_state_dict(state_dict=torch.load(os.path.join(CWD,'model_sample_code/modelmodel.pkl.{}'.format(best_model))))
 model.train(False)
 # double ckeck the best_model_score
 _run_epoch(1, 'valid')
