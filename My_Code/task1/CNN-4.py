@@ -541,15 +541,11 @@ trainData = AbstractDataset(train, PAD_TOKEN, max_len = 64)
 validData = AbstractDataset(valid, PAD_TOKEN, max_len = 64)
 testData = AbstractDataset(test, PAD_TOKEN, max_len = 64)
 
-print('type of trainData', type(trainData), '\n')
-print('type of validData', type(validData), '\n')
-print('type of testData', type(testData), '\n')
+#print('type of trainData', type(trainData), '\n')
+#print('type of validData', type(validData), '\n')
+#print('type of testData', type(testData), '\n')
 
 
-# In[ ]:
-
-# The original GRU model
-class Net(nn.Module):
     def __init__(self, vocabulary_size): # vocabulary_size is the lenght of word_dict
         super(Net, self).__init__()
         self.embedding_size = embedding_dim # 100
@@ -649,6 +645,8 @@ class CNN(nn.Module):
         self.conv3 = nn.Conv2d( in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding=0)
         self.conv4 = nn.Conv2d( in_channels, out_channels, (kernel_heights[3], embedding_length), stride, padding=0)
         self.conv5 = nn.Conv2d( in_channels, out_channels, (kernel_heights[4], embedding_length), stride, padding=0)
+        self.conv6 = nn.Conv2d( in_channels, out_channels, (kernel_heights[5], embedding_length), stride, padding=0)
+        self.conv7 = nn.Conv2d( in_channels, out_channels, (kernel_heights[6], embedding_length), stride, padding=0)
         self.dropout = nn.Dropout(keep_probab)
         self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
     def conv_block(self, input, conv_layer):
@@ -726,7 +724,18 @@ class CNN(nn.Module):
         #print(', max_out5.size(): ', max_out5.size(), end='')
         # max_out5.size() =  torch.Size([32, 1])
 
-        all_out = torch.cat((max_out1, max_out2, max_out3, max_out4, max_out5), 1)
+        max_out6 = self.conv_block(input, self.conv6)
+
+        #print(', max_out6.size(): ', max_out6.size(), end='')
+        # max_out6.size() =  torch.Size([32, 1])
+
+        max_out7 = self.conv_block(input, self.conv7)
+
+        #print(', max_out7.size(): ', max_out7.size(), end='')
+        # max_out7.size() =  torch.Size([32, 1])
+
+
+        all_out = torch.cat((max_out1, max_out2, max_out3, max_out4, max_out5, max_out6, max_out7), 1)
 
         #print(', all_out.size(): ', all_out.size(), end='')
         # all_out.size() = (batch_size, num_kernels*out_channels) = torch.Size([32, 3]) 
@@ -861,7 +870,7 @@ def save(epoch):
 
 # CNN model
 # batch_size,  output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 6, 1, 15, [2, 3, 4, 5, 6], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
+model = CNN (batch_size, 6, 1, 25, [2, 3, 4, 5, 6, 7, 8], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
