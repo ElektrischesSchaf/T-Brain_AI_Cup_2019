@@ -76,7 +76,7 @@ embedding_dim = 300
 hidden_dim = 500
 learning_rate = 2e-5
 max_epoch = 25
-batch_size = 1 # Must be one, since we have test dataset
+batch_size = 10 # Must be one, since we have test dataset
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
@@ -803,6 +803,8 @@ trange = tqdm(enumerate(dataloader), total=len(dataloader), desc='Predict')
 prediction = []
 #print('1 prediction= ', prediction,'\n')
 for i, (x, y, sent_len) in trange:
+    if(x.size()[0] is not batch_size):
+        continue
     o_labels = model(x.to(device))
     #print('In Prediction Cell, o_labels= ', o_labels)
     o_labels = o_labels>0.5
