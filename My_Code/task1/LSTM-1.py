@@ -723,9 +723,9 @@ class LSTMClassifier(nn.Module):
 		
 		''' Here we will map all the indexes present in the input sequence to the corresponding word vector using our pre-trained word_embedddins.'''
         # input_sentence.size() = (batch_size, 1, num of words)
-		input = self.word_embeddings(input_sentence) # embedded input of shape = (batch_size, 1, num of words,  embedding_length)
+        input = self.word_embeddings(input_sentence) # embedded input of shape = (batch_size, 1, num of words,  embedding_length)
         input=input.squeeze(1) # embedded input of shape = (batch_size, num of words,  embedding_length)
-		input = input.permute(1, 0, 2) # input.size() = (num_sequences, batch_size, embedding_length)
+        input = input.permute(1, 0, 2) # input.size() = (num_sequences, batch_size, embedding_length)
 		if batch_size is None:
 			h_0 = Variable(torch.zeros(1, self.batch_size, self.hidden_size).cuda()) # Initial hidden state of the LSTM
 			c_0 = Variable(torch.zeros(1, self.batch_size, self.hidden_size).cuda()) # Initial cell state of the LSTM
