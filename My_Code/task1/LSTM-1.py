@@ -73,10 +73,10 @@ def write_config(filename, with_time=False):
 ### Run this cell for renewing the hyperparameters
 
 embedding_dim = 300
-hidden_dim = 256
+hidden_dim = 500
 learning_rate = 2e-5
-max_epoch = 5
-batch_size = 10 # TODO fix this
+max_epoch = 25
+batch_size = 1 # Must be one, since we have test dataset
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
@@ -606,12 +606,9 @@ class LSTMClassifier(nn.Module):
         # input.size() = (num_sequences, batch_size, embedding_length)
 
         if batch_size is None:
-            #print('1 self.batch_size_LSTM= ', self.batch_size_LSTM, '\n')
-            #self.batch_size_LSTM=10
-            #print('2 self.batch_size_LSTM= ', self.batch_size_LSTM, '\n')
             h_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial hidden state of the LSTM
             c_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial cell state of the LSTM
-            print('size of h_0: ', h_0.size(), ', size of c_0: ', c_0.size(), '\n')
+            #print('size of h_0: ', h_0.size(), ', size of c_0: ', c_0.size(), '\n')
         else:
             h_0 = Variable(torch.zeros(1, batch_size, self.hidden_size).cuda())
             c_0 = Variable(torch.zeros(1, batch_size, self.hidden_size).cuda())
