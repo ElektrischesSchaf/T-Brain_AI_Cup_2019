@@ -526,7 +526,7 @@ class SelfAttention(nn.Module):
         Tensor size : lstm_output.size() = (batch_size, num_seq, 2*hidden_size)
                       attn_weight_matrix.size() = (batch_size, 30, num_seq)
         """
-        attn_weight_matrix = self.W_s2(F.tanh(self.W_s1(lstm_output)))
+        attn_weight_matrix = self.W_s2(torch.tanh(self.W_s1(lstm_output)))
         attn_weight_matrix = attn_weight_matrix.permute(0, 2, 1)
         attn_weight_matrix = F.softmax(attn_weight_matrix, dim=2)
 
