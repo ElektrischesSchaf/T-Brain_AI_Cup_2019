@@ -73,8 +73,8 @@ def write_config(filename, with_time=False):
 ### Run this cell for renewing the hyperparameters
 
 embedding_dim = 300
-hidden_dim = 512
-learning_rate = 1e-4
+hidden_dim = 256
+learning_rate = 2e-5
 max_epoch = 50
 batch_size = 16
 
@@ -449,7 +449,7 @@ def sperate_dict( the_list ):
         #if ('Abstract' in row)and('Label' in row): # suspecious
         for i in range(len(row['Abstract']) ):
             new_dict={}
-            print('row= ', row, ' ')
+            #print('row= ', row, ' ')
             #print('in Abstact key= ', row['Abstract'][i], '\n in Label key= ', row['Label'][i], '\n')
             new_dict['Abstract']=[ row['Abstract'][i] ]
 
@@ -735,6 +735,8 @@ class LSTMClassifier(nn.Module):
 			c_0 = Variable(torch.zeros(1, batch_size, self.hidden_size).cuda())
 		output, (final_hidden_state, final_cell_state) = self.lstm(input, (h_0, c_0))
 		final_output = self.label(final_hidden_state[-1]) # final_hidden_state.size() = (1, batch_size, hidden_size) & final_output.size() = (batch_size, output_size)
+		final_output=final_output.unsqueeze(1)
+		final_output=torch.sigmoid(final_output)
 		
 		return final_output
 
