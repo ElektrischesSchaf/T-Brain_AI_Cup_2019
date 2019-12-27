@@ -723,7 +723,7 @@ class LSTMClassifier(nn.Module):
 		
 		''' Here we will map all the indexes present in the input sequence to the corresponding word vector using our pre-trained word_embedddins.'''
 		# input_sentence.size() = (batch_size, 1, num of words)
-		print('1 input.size()=', input.size(), '\n')
+		print('1 input_sentence.size()=', input_sentence.size(), '\n')
 		input = self.word_embeddings(input_sentence) # embedded input of shape = (batch_size, 1, num of words,  embedding_length)
 		print('2 input.size()=', input.size(), '\n')
 		input=input.squeeze(1) # embedded input of shape = (batch_size, num of words,  embedding_length)
