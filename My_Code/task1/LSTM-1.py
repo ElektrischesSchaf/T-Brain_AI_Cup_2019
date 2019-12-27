@@ -689,6 +689,8 @@ def _run_epoch(epoch, mode):
 
         # Butters
         #print('In _run_epoch, i=', str(i), ' ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, ' ', 'len of sent_len', len(sent_len), '\n')
+        if(x.size()[0] is not batch_size):
+            continue
         o_labels, batch_loss = _run_iter(x,y)
         if mode=="train":
             opt.zero_grad()
@@ -716,8 +718,6 @@ def _run_iter(x,y):
     abstract = x.to(device)
     labels = y.to(device)
     #print('\n\n In _run_iter, ', 'shape of x', x.shape, ' ', 'shape of y', y.shape)
-    if(abstract.size()[0] is not batch_size):
-        continue
     o_labels = model(abstract)
     #print('The output shape: ', o_labels.shape, ' The label shape: ', labels.shape, '\n')
     l_loss = criteria(o_labels, labels)
