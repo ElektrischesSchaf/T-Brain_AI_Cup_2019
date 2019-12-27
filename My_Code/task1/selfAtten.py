@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+# Crack AbstractDataset and make adjustment by a seperate_dict function
+# Re-write CNN model
 # In[ ]:
 
 
@@ -13,6 +14,7 @@ import pickle, json, re, time
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.autograd import Variable
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
@@ -55,7 +57,7 @@ def write_config(filename, with_time=False):
     if with_time == False:
         with open("{}.ini".format(filename), 'w') as configfile:
             config.write(configfile)
-        return 'config'            
+        return 'config'
     else:
         timestr = time.strftime("%Y%m%d_%H%M%S")
         filename = filename + '_' + timestr
@@ -70,11 +72,11 @@ def write_config(filename, with_time=False):
 ### Hyperparameters tuning
 ### Run this cell for renewing the hyperparameters
 
-embedding_dim = 100
-hidden_dim = 512
-learning_rate = 1e-4
-max_epoch = 10
-batch_size = 16
+embedding_dim = 300
+hidden_dim = 500
+learning_rate = 2e-5
+max_epoch = 100
+batch_size = 15
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
@@ -158,7 +160,7 @@ from nltk.tokenize import word_tokenize
 
 def collect_words(data_path, n_workers=4):
     df = pd.read_csv(data_path, dtype=str)
-        
+
     # create a list for storing sentences
     sent_list = []
     for i in df.iterrows():
@@ -178,47 +180,10 @@ def collect_words(data_path, n_workers=4):
         words = set(sum(chunks.get(), []))
         
     return words
-    '''
-    print(words)
-    {'scrambling',
-    'fitbit',
-    'x-y',
-    'usv',
-    'feeds',
-    'ganglia',
-    'reconciling',
-    'hack',
-    'multi-modality',
-    'physics',
-    'compartment',
-    'pre-publication',
-    'sensitivity-based',
-    'hindex',
-    'lpi',
-    'astor4android',
-    'downstream',
-    'representation/estimation',
-    'pull-in',
-    '10^60',
-    'proof-program',
-    'cross-checking',
-    'sub-block',
-    'multi-player',
-    'wsns',
-    'uncommon',
-    'un-normalized',
-    ...
-    '''
-
-
-# In[ ]:
-
 
 words = set()
 words |= collect_words(os.path.join(CWD,'data/trainset.csv'))
 
-
-# In[ ]:
 
 
 PAD_TOKEN = 0
@@ -227,41 +192,6 @@ word_dict = {'<pad>':PAD_TOKEN,'<unk>':UNK_TOKEN}
 
 for word in words:
     word_dict[word]=len(word_dict) # len(word_dict)= 34966
-
-    '''
-    print(len(word_dict))
-    i = 0
-    for item in word_dict.items():
-        if i > 20:
-            break
-        print(item)
-        i = i + 1
-
-    ('<pad>', 0)
-    ('<unk>', 1)
-    ('scrambling', 2)
-    ('fitbit', 3)
-    ('x-y', 4)
-    ('usv', 5)
-    ('feeds', 6)
-    ('ganglia', 7)
-    ('reconciling', 😎
-    ('hack', 9)
-    ('multi-modality', 10)
-    ('physics', 11)
-    ('compartment', 12)
-    ('pre-publication', 13)
-    ('sensitivity-based', 14)
-    ('hindex', 15)
-    ('lpi', 16)
-    ('astor4android', 17)
-    ('downstream', 18)
-    ('representation/estimation', 19)
-    ('pull-in', 20)
-    '''
-
-# In[ ]:
-
 
 with open(os.path.join(CWD,'dicitonary.pkl'),'wb') as f:
     pickle.dump(word_dict, f)
@@ -294,7 +224,7 @@ if not os.path.exists('glove'):
 ### Parsing the GloVe word-embeddings file
 # Parse the unzipped file (a .txt file) to build an index that maps words (as strings) to their vector representation (as number vectors)
 
-wordvector_path = 'glove/glove.6B.100d.txt'
+wordvector_path = 'glove/glove.6B.300d.txt'
 embeddings_index = {}
 f = open(wordvector_path)
 for line in f:
@@ -423,7 +353,9 @@ def preprocess_sample(data, word_dict):
     
     ## convert the labels into one-hot encoding
     if 'Task 1' in data:
-        processed['Label'] = [label_to_onehot(label) for label in data['Task 1'].split(' ')]
+
+        processed['Label'] = [label_to_onehot(label) for label in data['Task 1'].split(' ')] 
+        # processed['Label'] is a 2D list
         
     return processed
 
@@ -438,6 +370,26 @@ valid = get_dataset(os.path.join(CWD,'data/validset.csv'), word_dict, n_workers=
 print('[INFO] Start processing testset...')
 test = get_dataset(os.path.join(CWD,'data/testset.csv'), word_dict, n_workers=4)
 
+def sperate_dict( the_list ):
+    output=[]
+    for row in  the_list: # row={'Abstract':[[],[],...], 'Label':[[],[],...]}
+        #print('row=', row, '\n')
+        #if ('Abstract' in row)and('Label' in row): # suspecious
+        for i in range(len(row['Abstract']) ):
+            new_dict={}
+            #print('row= ', row, ' ')
+            #print('in Abstact key= ', row['Abstract'][i], '\n in Label key= ', row['Label'][i], '\n')
+            new_dict['Abstract']=[ row['Abstract'][i] ]
+
+            if 'Label' in row:
+                new_dict['Label']=[ row['Label'][i] ]
+
+            output.append( new_dict.copy() )
+    return output
+
+train=sperate_dict(train)
+valid=sperate_dict(valid)
+test=sperate_dict(test)
 
 # ### Create a dataset class for the abstract dataset
 # `torch.utils.data.Dataset` is an abstract class representing a dataset.<br />Your custom dataset should inherit Dataset and override the following methods:
@@ -463,24 +415,24 @@ class AbstractDataset(Dataset):
     def __getitem__(self, index):
         return self.data[index]
         
-    def collate_fn(self, datas):
+    def collate_fn(self, datas): # datas = batch, len(datas)=batch_size
         # get max length in this batch
         max_sent = max([len(data['Abstract']) for data in datas])
         max_len = max([min(len(sentence), self.max_len) for data in datas for sentence in data['Abstract']])
         batch_abstract = []
         batch_label = []
         sent_len = []
-        for data in datas:
+        for data in datas: # a data is a row in trainset.csv, a datas is a number of batch_size of rows in trainset.csv
             # padding abstract to make them in same length
-            pad_abstract = []
-            for sentence in data['Abstract']:
+            pad_abstract = [] # pad_abstract is 1D now
+            for sentence in data['Abstract']: # pad_abstract is 2D now
                 if len(sentence) > max_len:
                     pad_abstract.append(sentence[:max_len])
                 else:
                     pad_abstract.append(  sentence+[self.pad_idx]*( max_len-len(sentence) )  )
-            sent_len.append(len(pad_abstract))
+            sent_len.append(len(pad_abstract)) # how many sentences in this row
             pad_abstract.extend([[self.pad_idx]*max_len]*(max_sent-len(pad_abstract)))            
-            batch_abstract.append(pad_abstract)
+            batch_abstract.append(pad_abstract) # batch_abstract is 3D now
             '''
             print('len fo sentence', len(sentence), '\n') 
             print('len of pad_abstract', len(pad_abstract), '\n')
@@ -491,9 +443,7 @@ class AbstractDataset(Dataset):
             if 'Label' in data:
                 pad_label = data['Label']
                 pad_label.extend([[0]*6]*(max_sent-len(pad_label)))
-                
                 batch_label.append(pad_label)
-
         '''
         print('In class AbstractDataset(Dataset): \n')
         print('len of batch_abstract', len(batch_abstract), '\n') # 16
@@ -520,91 +470,113 @@ trainData = AbstractDataset(train, PAD_TOKEN, max_len = 64)
 validData = AbstractDataset(valid, PAD_TOKEN, max_len = 64)
 testData = AbstractDataset(test, PAD_TOKEN, max_len = 64)
 
-print('type of trainData', type(trainData), '\n')
-print('type of validData', type(validData), '\n')
-print('type of testData', type(testData), '\n')
+#print('type of trainData', type(trainData), '\n')
+#print('type of validData', type(validData), '\n')
+#print('type of testData', type(testData), '\n')
 
+class SelfAttention(nn.Module):
+	def __init__(self, batch_size, output_size, hidden_size, vocab_size, embedding_length, weights):
+		super(SelfAttention, self).__init__()
 
-# In[ ]:
+		"""
+		Arguments
+		---------
+		batch_size : Size of the batch which is same as the batch_size of the data returned by the TorchText BucketIterator
+		output_size : 2 = (pos, neg)
+		hidden_sie : Size of the hidden_state of the LSTM
+		vocab_size : Size of the vocabulary containing unique words
+		embedding_length : Embeddding dimension of GloVe word embeddings
+		weights : Pre-trained GloVe word_embeddings which we will use to create our word_embedding look-up table 
+		
+		--------
+		
+		"""
 
+		self.batch_size = batch_size
+		self.output_size = output_size
+		self.hidden_size = hidden_size
+		self.vocab_size = vocab_size
+		self.embedding_length = embedding_length
+		self.weights = weights
 
-class Net(nn.Module):
-    def __init__(self, vocabulary_size): # vocabulary_size is the lenght of word_dict
-        super(Net, self).__init__()
-        self.embedding_size = embedding_dim # 100
-        self.hidden_dim = hidden_dim # 512
-        '''
-        接着就是word embedding的定义nn.Embedding(2, 5)，这里的2表示有2个词，5表示5维，
-        其实也就是一个2×5的矩阵，所以如果你有1000个词，每个词希望是100维，
-        你就可以这样建立一个word embedding，nn.Embedding(1000, 100)。
-        '''
-        self.embedding = nn.Embedding(vocabulary_size, self.embedding_size)  # vocabulary_size=lenght of word_dict, embedding_size=100
-        self.embedding.weight = torch.nn.Parameter(embedding_matrix) # shape of embedding_matrix=(lenght of word_dict, embedding_size)
-        self.sent_rnn = nn.GRU(self.embedding_size,
-                                self.hidden_dim,
-                                bidirectional=True,
-                                batch_first=True)
-        
-        self.l1 = nn.Linear(self.hidden_dim*2, self.hidden_dim)
-        torch.nn.init.xavier_normal_(self.l1.weight)
-        #self.layernorm1 = nn.LayerNorm(self.hidden_dim*2)
-        #self.layernorm2 = nn.LayerNorm(self.hidden_dim)
-        self.l2 = nn.Linear(self.hidden_dim, 6)
+		self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
+		self.word_embeddings.weights = nn.Parameter(weights, requires_grad=False)
+		self.dropout = 0.8
+		self.bilstm = nn.LSTM(embedding_length, hidden_size, dropout=self.dropout, bidirectional=True)
+		# We will use da = 350, r = 30 & penalization_coeff = 1 as per given in the self-attention original ICLR paper
+		self.W_s1 = nn.Linear(2*hidden_size, 350)
+		self.W_s2 = nn.Linear(350, 30)
+		self.fc_layer = nn.Linear(30*2*hidden_size, 2000)
+		self.label = nn.Linear(2000, output_size)
 
-    # b: batch_size
-    # s: number of sentences
-    # w: number of words
-    # e: embedding_dim
-    def forward(self, x):
-        # x = (16, num of sentences, num of words)
-        #print('In forward 1, shape of x = ', x.shape, end=' ')
+	def attention_net(self, lstm_output):
 
-        x = self.embedding(x) # type of x = <class 'torch.Tensor'>
+		"""
+		Now we will use self attention mechanism to produce a matrix embedding of the input sentence in which every row represents an
+		encoding of the inout sentence but giving an attention to a specific part of the sentence. We will use 30 such embedding of 
+		the input sentence and then finally we will concatenate all the 30 sentence embedding vectors and connect it to a fully 
+		connected layer of size 2000 which will be connected to the output layer of size 2 returning logits for our two classes i.e., 
+		pos & neg.
+		Arguments
+		---------
+		lstm_output = A tensor containing hidden states corresponding to each time step of the LSTM network.
+		---------
+		Returns : Final Attention weight matrix for all the 30 different sentence embedding in which each of 30 embeddings give
+				  attention to different parts of the input sentence.
+		Tensor size : lstm_output.size() = (batch_size, num_seq, 2*hidden_size)
+					  attn_weight_matrix.size() = (batch_size, 30, num_seq)
+		"""
+		attn_weight_matrix = self.W_s2(F.tanh(self.W_s1(lstm_output)))
+		attn_weight_matrix = attn_weight_matrix.permute(0, 2, 1)
+		attn_weight_matrix = F.softmax(attn_weight_matrix, dim=2)
 
-        # x = (16, num of sentences, num of words, 100)
-        #print('In forward 2, shape of x = ', x.shape, end=' ')
+		return attn_weight_matrix
 
-        b, s, w, e = x.shape
-        x = x.view(b, s*w, e)
+	def forward(self, input_sentences, batch_size=None):
 
-        # x = (16, num of sentences X num of words, 100)
-        #print('In forward 3, shape of x = ', x.shape, end=' ')
-        
-        x, __ = self.sent_rnn(x)
+		""" 
+		Parameters
+		----------
+		input_sentence: input_sentence of shape = (batch_size, num_sequences)
+		batch_size : default = None. Used only for prediction on a single sentence after training (batch_size = 1)
+		
+		Returns
+		-------
+		Output of the linear layer containing logits for pos & neg class.
+		
+		"""
 
-        # x = (16, num of sentences X num of words, 1024)
-        #print('In forward 4, shape of x = ', x.shape, end=' ')
+		input = self.word_embeddings(input_sentences)
 
-        x = x.view(b, s, w, -1)
+        input=input.squeeze(1)
 
-        # x = (16, num of sentences, num of words, 1024)
-        #print('In forward 5, shape of x = ', x.shape, end=' ')
+		input = input.permute(1, 0, 2)
+		if batch_size is None:
+			h_0 = Variable(torch.zeros(2, self.batch_size, self.hidden_size).cuda())
+			c_0 = Variable(torch.zeros(2, self.batch_size, self.hidden_size).cuda())
+		else:
+			h_0 = Variable(torch.zeros(2, batch_size, self.hidden_size).cuda())
+			c_0 = Variable(torch.zeros(2, batch_size, self.hidden_size).cuda())
 
-        x = torch.max(x, dim=2)[0]
+		output, (h_n, c_n) = self.bilstm(input, (h_0, c_0))
+		output = output.permute(1, 0, 2)
+		# output.size() = (batch_size, num_seq, 2*hidden_size)
+		# h_n.size() = (1, batch_size, hidden_size)
+		# c_n.size() = (1, batch_size, hidden_size)
+		attn_weight_matrix = self.attention_net(output)
+		# attn_weight_matrix.size() = (batch_size, r, num_seq)
+		# output.size() = (batch_size, num_seq, 2*hidden_size)
+		hidden_matrix = torch.bmm(attn_weight_matrix, output)
+		# hidden_matrix.size() = (batch_size, r, 2*hidden_size)
+		# Let's now concatenate the hidden_matrix and connect it to the fully connected layer.
+		fc_out = self.fc_layer(hidden_matrix.view(-1, hidden_matrix.size()[1]*hidden_matrix.size()[2]))
+		logits = self.label(fc_out)
+		# logits.size() = (batch_size, output_size)
 
-        # x = (16, num of sentences, 1024)
-        #print('In forward 6, shape of x = ', x.shape, end=' ')
+        logits=logits.unsqueeze(1)
+        logits=torch.sigmoid(logits)
 
-        #final_ht = x[-1]
-        
-        #x = self.layernorm1(x)
-        
-        x = torch.relu(self.l1(x)) # self.l1 = nn.Linear(self.hidden_dim*2, self.hidden_dim)
-
-        # x = (16, num of sentences, 512)
-        #print('In forward 7, shape of x = ', x.shape, end=' ')
-        
-        #x = self.layernorm2(x)
-        
-        x = torch.sigmoid(self.l2(x)) # nn.Linear(self.hidden_dim, 6)
-
-        # x = (16, num of sentences, 6)
-        #print('In forward 8, shape of x = ', x.shape, end=' ')
-
-        return x
-
-
-# In[ ]:
+		return logits
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -672,6 +644,8 @@ def _run_epoch(epoch, mode):
 
         # Butters
         #print('In _run_epoch, i=', str(i), ' ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, ' ', 'len of sent_len', len(sent_len), '\n')
+        if(x.size()[0] is not batch_size):
+            continue
         o_labels, batch_loss = _run_iter(x,y)
         if mode=="train":
             opt.zero_grad()
@@ -705,17 +679,17 @@ def _run_iter(x,y):
     return o_labels, l_loss
 
 def save(epoch):
-    if not os.path.exists(os.path.join(CWD,'model_sample_code')):
-        os.makedirs(os.path.join(CWD,'model_sample_code'))
-    torch.save(model.state_dict(), os.path.join( CWD,'model_sample_code/model.pkl.'+str(epoch) ))
-    with open( os.path.join( CWD,'model_sample_code/history.json'), 'w') as f:
+    if not os.path.exists(os.path.join(CWD,'model_selfAtten')):
+        os.makedirs(os.path.join(CWD,'model_selfAtten'))
+    torch.save(model.state_dict(), os.path.join( CWD,'model_selfAtten/model.pkl.'+str(epoch) ))
+    with open( os.path.join( CWD,'model_selfAtten/history.json'), 'w') as f:
         json.dump(history, f, indent=4)
 
 
 # In[ ]:
 
-
-model = Net(len(word_dict))
+# SelfAttention ( batch_size, output_size, hidden_size, vocab_size, embedding_length, weights)
+model = SelfAttention(batch_size, 6, hidden_dim, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
@@ -736,7 +710,7 @@ for epoch in range(max_epoch):
     save(epoch)
 
 # Plot the training results 
-with open(os.path.join(CWD,'model_sample_code/history.json'), 'r') as f:
+with open(os.path.join(CWD,'model_selfAtten/history.json'), 'r') as f:
     history = json.loads(f.read())
     
 train_loss = [l['loss'] for l in history['train']]
@@ -750,7 +724,7 @@ plt.plot(train_loss, label='train')
 plt.plot(valid_loss, label='valid')
 plt.legend()
 plt.show()
-plt.savefig("Loss_sample_code.png")
+plt.savefig("Loss_selfAtten.png")
 
 plt.figure(figsize=(7,5))
 plt.title('F1 Score')
@@ -758,7 +732,7 @@ plt.plot(train_f1, label='train')
 plt.plot(valid_f1, label='valid')
 plt.legend()
 plt.show()
-plt.savefig("F1_score_sample_code.png")
+plt.savefig("F1_score_selfAtten.png")
 
 best_score, best_epoch=max([[l['f1'], idx] for idx, l in enumerate(history['valid'])])
 print('best_score= ', best_score, ', best_epoch= ', best_epoch, '\n')
@@ -772,23 +746,29 @@ print('Best F1 score ', max([[l['f1'], idx] for idx, l in enumerate(history['val
 
 # fill the epoch of the lowest val_loss to best_model
 best_model = best_epoch
-model.load_state_dict(state_dict=torch.load(os.path.join(CWD,'model_sample_code/'modelmodel.pkl.{}'.format(best_model))))
+model.load_state_dict(state_dict=torch.load(os.path.join(CWD,'model_selfAtten/model.pkl.{}'.format(best_model))))
 model.train(False)
 # double ckeck the best_model_score
 _run_epoch(1, 'valid')
 
 # start testing
 dataloader = DataLoader(dataset=testData,
-                            batch_size=64,
+                            batch_size=batch_size,
                             shuffle=False,
                             collate_fn=testData.collate_fn,
                             num_workers=8)
 trange = tqdm(enumerate(dataloader), total=len(dataloader), desc='Predict')
 prediction = []
+#print('1 prediction= ', prediction,'\n')
 for i, (x, y, sent_len) in trange:
+    if(x.size()[0] is not batch_size):
+        continue
     o_labels = model(x.to(device))
+    #print('In Prediction Cell, o_labels= ', o_labels)
     o_labels = o_labels>0.5
     for idx, o_label in enumerate(o_labels):
+        #print('In Prediction Cell:', '\n', 'sent_len= ', sent_len,'\n')
+        #print('2 prediction= ', prediction,'\n')
         prediction.append(o_label[:sent_len[idx]].to('cpu'))
 prediction = torch.cat(prediction).detach().numpy().astype(int)
 
@@ -829,17 +809,7 @@ def SubmitGenerator(prediction, sampleFile, public=True, filename='prediction.cs
 SubmitGenerator(prediction,
                 os.path.join(CWD,'data/task1_sample_submission.csv'), 
                 True, 
-                os.path.join(CWD,'submission_sample_code.csv'))
-
-
-# In[ ]:
-
-
-#get_ipython().run_line_magic('load_ext', 'tensorboard')
-
-
-# In[ ]:
-
+                os.path.join(CWD,'submission_selfAtten.csv'))
 
 #get_ipython().run_line_magic('tensorboard', '--logdir=task1/test_experiment')
 tEnd=time.time()

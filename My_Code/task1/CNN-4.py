@@ -179,48 +179,9 @@ def collect_words(data_path, n_workers=4):
         words = set(sum(chunks.get(), []))
         
     return words
-    '''
-    print(words)
-    {'scrambling',
-    'fitbit',
-    'x-y',
-    'usv',
-    'feeds',
-    'ganglia',
-    'reconciling',
-    'hack',
-    'multi-modality',
-    'physics',
-    'compartment',
-    'pre-publication',
-    'sensitivity-based',
-    'hindex',
-    'lpi',
-    'astor4android',
-    'downstream',
-    'representation/estimation',
-    'pull-in',
-    '10^60',
-    'proof-program',
-    'cross-checking',
-    'sub-block',
-    'multi-player',
-    'wsns',
-    'uncommon',
-    'un-normalized',
-    ...
-    '''
-
-
-# In[ ]:
-
 
 words = set()
 words |= collect_words(os.path.join(CWD,'data/trainset.csv'))
-
-
-# In[ ]:
-
 
 PAD_TOKEN = 0
 UNK_TOKEN = 1
@@ -228,41 +189,6 @@ word_dict = {'<pad>':PAD_TOKEN,'<unk>':UNK_TOKEN}
 
 for word in words:
     word_dict[word]=len(word_dict) # len(word_dict)= 34966
-
-    '''
-    print(len(word_dict))
-    i = 0
-    for item in word_dict.items():
-        if i > 20:
-            break
-        print(item)
-        i = i + 1
-
-    ('<pad>', 0)
-    ('<unk>', 1)
-    ('scrambling', 2)
-    ('fitbit', 3)
-    ('x-y', 4)
-    ('usv', 5)
-    ('feeds', 6)
-    ('ganglia', 7)
-    ('reconciling', 😎
-    ('hack', 9)
-    ('multi-modality', 10)
-    ('physics', 11)
-    ('compartment', 12)
-    ('pre-publication', 13)
-    ('sensitivity-based', 14)
-    ('hindex', 15)
-    ('lpi', 16)
-    ('astor4android', 17)
-    ('downstream', 18)
-    ('representation/estimation', 19)
-    ('pull-in', 20)
-    '''
-
-# In[ ]:
-
 
 with open(os.path.join(CWD,'dicitonary.pkl'),'wb') as f:
     pickle.dump(word_dict, f)
@@ -306,10 +232,6 @@ for line in f:
 f.close()
 print('Found %s word vectors.' % len(embeddings_index))
 
-
-# In[ ]:
-
-
 ### Preparing the GloVe word-embeddings matrix
 
 max_words = len(word_dict)
@@ -320,10 +242,6 @@ for word, i in word_dict.items():
     if embedding_vector is not None:
         embedding_matrix[i] = embedding_vector
         # shape of embedding_matrix = (34966, 100) = (length of word_dict, embedding_dim)
-
-
-# In[ ]:
-
 
 embedding_matrix = torch.FloatTensor(embedding_matrix)
 
@@ -541,10 +459,6 @@ trainData = AbstractDataset(train, PAD_TOKEN, max_len = 64)
 validData = AbstractDataset(valid, PAD_TOKEN, max_len = 64)
 testData = AbstractDataset(test, PAD_TOKEN, max_len = 64)
 
-#print('type of trainData', type(trainData), '\n')
-#print('type of validData', type(validData), '\n')
-#print('type of testData', type(testData), '\n')
-
 # CNN model
 class CNN(nn.Module):
     def __init__(self, batch_size, output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights):
@@ -613,58 +527,58 @@ class CNN(nn.Module):
         input = self.word_embeddings(input_sentences)
 
         #print('\n input.size() 1: ', input.size(), end='')
-        # input.size() = (batch_size, num_seq, embedding_length) = torch.Size([32, 1, 200, 300])
+        # input.size() = (batch_size, num_seq, embedding_length) = torch.Size([batch_size, 1, 200, 300])
         
         max_out1 = self.conv_block(input, self.conv1)
 
         #print(', max_out1.size(): ', max_out1.size(), end='')
-        # max_out1.size() =  torch.Size([32, 1])
+        # max_out1.size() =  torch.Size([batch_size, out_channels])
 
         max_out2 = self.conv_block(input, self.conv2)
 
         #print(', max_out2.size(): ', max_out2.size(), end='')
-        # max_out2.size() =  torch.Size([32, 1])
+        # max_out2.size() =  torch.Size([batch_size, out_channels])
 
         max_out3 = self.conv_block(input, self.conv3)        
 
         #print(', max_out3.size(): ', max_out3.size(), end='')
-        # max_out3.size() =  torch.Size([32, 1])
+        # max_out3.size() =  torch.Size([batch_size, out_channels])
 
         max_out4 = self.conv_block(input, self.conv4)
 
         #print(', max_out4.size(): ', max_out4.size(), end='')
-        # max_out4.size() =  torch.Size([32, 1])
+        # max_out4.size() =  torch.Size([batch_size, out_channels])
 
         max_out5 = self.conv_block(input, self.conv5)
 
         #print(', max_out5.size(): ', max_out5.size(), end='')
-        # max_out5.size() =  torch.Size([32, 1])
+        # max_out5.size() =  torch.Size([batch_size, out_channels])
 
         max_out6 = self.conv_block(input, self.conv6)
 
         #print(', max_out6.size(): ', max_out6.size(), end='')
-        # max_out6.size() =  torch.Size([32, 1])
+        # max_out6.size() =  torch.Size([32, out_channels])
 
         max_out7 = self.conv_block(input, self.conv7)
 
         #print(', max_out7.size(): ', max_out7.size(), end='')
-        # max_out7.size() =  torch.Size([32, 1])
+        # max_out7.size() =  torch.Size([batch_size, out_channels])
 
 
         all_out = torch.cat((max_out1, max_out2, max_out3, max_out4, max_out5, max_out6, max_out7), 1)
 
         #print(', all_out.size(): ', all_out.size(), end='')
-        # all_out.size() = (batch_size, num_kernels*out_channels) = torch.Size([32, 3]) 
+        # all_out.size() = (batch_size, num_kernels*out_channels) = torch.Size([batch_size, batch_size * kernel_heights]) 
 
         fc_in = self.dropout(all_out)
 
         #print(', fc_in.size(): ', all_out.size(), end='')
-        # fc_in.size()) = (batch_size, num_kernels*out_channels) =  torch.Size([32, 3]) 
+        # fc_in.size()) = (batch_size, num_kernels*out_channels) =  torch.Size([batch_size, batch_size * kernel_heights]) 
 
         logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
         #print(', logits.size(): ', logits.size(), '\n')
-        # logits.size() = ( batch_size, output_size)  = torch.Size([32, 2])
+        # logits.size() = ( batch_size, output_size)  = torch.Size([batch_size, output_size])
 
         logits=logits.unsqueeze(1)
         logits=torch.sigmoid(logits)
