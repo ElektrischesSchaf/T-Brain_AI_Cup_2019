@@ -606,7 +606,7 @@ class LSTMClassifier(nn.Module):
 		# input.size() = (num_sequences, batch_size, embedding_length)
 
 		if batch_size is None:
-            print('self.batch_size_LSTM=, ' self.batch_size_LSTM, '\n')
+			print('self.batch_size_LSTM=, ' self.batch_size_LSTM, '\n')
 			h_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial hidden state of the LSTM
 			c_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial cell state of the LSTM
 		else:
