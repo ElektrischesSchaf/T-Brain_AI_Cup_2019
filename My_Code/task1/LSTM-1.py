@@ -76,7 +76,7 @@ embedding_dim = 300
 hidden_dim = 256
 learning_rate = 2e-5
 max_epoch = 50
-batch_size = 16
+batch_size = 1 # TODO fix this
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
