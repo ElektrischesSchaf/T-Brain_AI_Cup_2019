@@ -696,7 +696,7 @@ class LSTMClassifier(nn.Module):
 		
 		"""
 		
-		self.batch_size = batch_size
+		self.batch_size_LSTM = batch_size
 		self.output_size = output_size
 		self.hidden_size = hidden_size
 		self.vocab_size = vocab_size
@@ -728,8 +728,8 @@ class LSTMClassifier(nn.Module):
 		input=input.squeeze(1) # embedded input of shape = (batch_size, num of words,  embedding_length)
 		input = input.permute(1, 0, 2) # input.size() = (num_sequences, batch_size, embedding_length)
 		if batch_size is None:
-			h_0 = Variable(torch.zeros(1, self.batch_size, self.hidden_size).cuda()) # Initial hidden state of the LSTM
-			c_0 = Variable(torch.zeros(1, self.batch_size, self.hidden_size).cuda()) # Initial cell state of the LSTM
+			h_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial hidden state of the LSTM
+			c_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial cell state of the LSTM
 		else:
 			h_0 = Variable(torch.zeros(1, batch_size, self.hidden_size).cuda())
 			c_0 = Variable(torch.zeros(1, batch_size, self.hidden_size).cuda())
