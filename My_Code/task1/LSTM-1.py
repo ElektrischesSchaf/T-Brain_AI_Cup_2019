@@ -546,139 +546,6 @@ testData = AbstractDataset(test, PAD_TOKEN, max_len = 64)
 #print('type of validData', type(validData), '\n')
 #print('type of testData', type(testData), '\n')
 
-# CNN model
-class CNN(nn.Module):
-    def __init__(self, batch_size, output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights):
-        super(CNN, self).__init__()
-        self.batch_size = batch_size
-        #self.output_size = output_size
-        self.in_channels = in_channels
-        self.out_channels = out_channels
-        self.kernel_heights = kernel_heights
-        self.stride = stride
-        self.padding = padding
-        self.vocab_size = vocab_size
-        self.embedding_length = embedding_length
-
-        self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
-        self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False)
-        self.conv1 = nn.Conv2d( in_channels, out_channels, (kernel_heights[0], embedding_length), stride, padding=0)
-        self.conv2 = nn.Conv2d( in_channels, out_channels, (kernel_heights[1], embedding_length), stride, padding=0)
-        self.conv3 = nn.Conv2d( in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding=0)
-        self.conv4 = nn.Conv2d( in_channels, out_channels, (kernel_heights[3], embedding_length), stride, padding=0)
-        self.conv5 = nn.Conv2d( in_channels, out_channels, (kernel_heights[4], embedding_length), stride, padding=0)
-        self.conv6 = nn.Conv2d( in_channels, out_channels, (kernel_heights[5], embedding_length), stride, padding=0)
-        self.conv7 = nn.Conv2d( in_channels, out_channels, (kernel_heights[6], embedding_length), stride, padding=0)
-        self.dropout = nn.Dropout(keep_probab)
-        self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
-    def conv_block(self, input, conv_layer):
-        conv_out = conv_layer(input)
-        #print('\nconv_out.size()= ', conv_out.size(), end=' ')
-        # conv_out.size() = (batch_size, out_channels, dim, 1) 
-
-        activation = F.relu(conv_out.squeeze(3))
-        #print(' activation.size()= ', activation.size(), end=' ')
-        # activation.size() = (batch_size, out_channels, dim)
-
-        #print(' activation.size()[2]= ', activation.size()[2], end='')
-        # activation.size()[2]=
-
-        max_out=F.max_pool1d(activation, activation.size()[2])
-        #print(' 1 max_out.size()= ', max_out.size(), end=' ')
-        # maxpool_out.size() = (batch_size, out_channels, 1)
-
-        max_out = max_out.squeeze(2)
-        #print(' 2 max_out.size()= ', max_out.size(), '\n')
-        # maxpool_out.size() = (batch_size, out_channels)
-
-        return max_out
-    def forward(self, input_sentences, batch_size=None):
-        """
-        The idea of the Convolutional Neural Netwok for Text Classification is very simple. We perform convolution operation on the embedding matrix 
-        whose shape for each batch is (num_seq, embedding_length) with kernel of varying height but constant width which is same as the embedding_length.
-        We will be using ReLU activation after the convolution operation and then for each kernel height, we will use max_pool operation on each tensor 
-        and will filter all the maximum activation for every channel and then we will concatenate the resulting tensors. This output is then fully connected
-        to the output layers consisting two units which basically gives us the logits for both positive and negative classes.
-
-        Parameters
-        ----------
-        input_sentences: input_sentences of shape = (batch_size, num_sequences)
-        batch_size : default = None. Used only for prediction on a single sentence after training (batch_size = 1)
-
-        Returns
-        -------
-        Output of the linear layer containing logits for pos & neg class.
-        logits.size() = (batch_size, output_size)
-
-        """
-        input = self.word_embeddings(input_sentences)
-
-        #print('\n input.size() 1: ', input.size(), end='')
-        # input.size() = (batch_size, num_seq, embedding_length) = torch.Size([32, 200, 300])
-
-        #input = input.unsqueeze(1)
-
-        #print(', input.size() 2: ', input.size(), end='')
-        # input.size() = (batch_size, 1, num_seq, embedding_length) = torch.Size([32, 1, 200, 300])
-
-        max_out1 = self.conv_block(input, self.conv1)
-
-        #print(', max_out1.size(): ', max_out1.size(), end='')
-        # max_out1.size() =  torch.Size([32, 1])
-
-        max_out2 = self.conv_block(input, self.conv2)
-
-        #print(', max_out2.size(): ', max_out2.size(), end='')
-        # max_out2.size() =  torch.Size([32, 1])
-
-        max_out3 = self.conv_block(input, self.conv3)        
-
-        #print(', max_out3.size(): ', max_out3.size(), end='')
-        # max_out3.size() =  torch.Size([32, 1])
-
-        max_out4 = self.conv_block(input, self.conv4)
-
-        #print(', max_out4.size(): ', max_out4.size(), end='')
-        # max_out4.size() =  torch.Size([32, 1])
-
-        max_out5 = self.conv_block(input, self.conv5)
-
-        #print(', max_out5.size(): ', max_out5.size(), end='')
-        # max_out5.size() =  torch.Size([32, 1])
-
-        max_out6 = self.conv_block(input, self.conv6)
-
-        #print(', max_out6.size(): ', max_out6.size(), end='')
-        # max_out6.size() =  torch.Size([32, 1])
-
-        max_out7 = self.conv_block(input, self.conv7)
-
-        #print(', max_out7.size(): ', max_out7.size(), end='')
-        # max_out7.size() =  torch.Size([32, 1])
-
-
-        all_out = torch.cat((max_out1, max_out2, max_out3, max_out4, max_out5, max_out6, max_out7), 1)
-
-        #print(', all_out.size(): ', all_out.size(), end='')
-        # all_out.size() = (batch_size, num_kernels*out_channels) = torch.Size([32, 3]) 
-
-        fc_in = self.dropout(all_out)
-
-        #print(', fc_in.size(): ', all_out.size(), end='')
-        # fc_in.size()) = (batch_size, num_kernels*out_channels) =  torch.Size([32, 3]) 
-
-        logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
-
-        #print(', logits.size(): ', logits.size(), '\n')
-        # logits.size() = ( batch_size, output_size)  = torch.Size([32, 2])
-
-        logits=logits.unsqueeze(1)
-        logits=torch.sigmoid(logits)
-
-        return logits
-
-# In[ ]:
-
 
 class LSTMClassifier(nn.Module):
 	def __init__(self, batch_size, output_size, hidden_size, vocab_size, embedding_length, weights):
@@ -739,6 +606,7 @@ class LSTMClassifier(nn.Module):
 		# input.size() = (num_sequences, batch_size, embedding_length)
 
 		if batch_size is None:
+            print('self.batch_size_LSTM=, ' self.batch_size_LSTM, '\n')
 			h_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial hidden state of the LSTM
 			c_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial cell state of the LSTM
 		else:
@@ -925,7 +793,7 @@ _run_epoch(1, 'valid')
 
 # start testing
 dataloader = DataLoader(dataset=testData,
-                            batch_size=64,
+                            batch_size=batch_size,
                             shuffle=False,
                             collate_fn=testData.collate_fn,
                             num_workers=8)

@@ -831,6 +831,8 @@ plt.legend()
 plt.show()
 plt.savefig("F1_score_CNN-4.png")
 
+best_score, best_epoch=max([[l['f1'], idx] for idx, l in enumerate(history['valid'])])
+print('best_score= ', best_score, ', best_epoch= ', best_epoch, '\n')
 print('Best F1 score ', max([[l['f1'], idx] for idx, l in enumerate(history['valid'])]))
 
 
@@ -840,7 +842,7 @@ print('Best F1 score ', max([[l['f1'], idx] for idx, l in enumerate(history['val
 # This is the Prediction cell.
 
 # fill the epoch of the lowest val_loss to best_model
-best_model = 9
+best_model = best_epoch
 model.load_state_dict(state_dict=torch.load(os.path.join(CWD,'model_CNN/model.pkl.{}'.format(best_model))))
 model.train(False)
 # double ckeck the best_model_score
