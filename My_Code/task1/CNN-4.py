@@ -613,13 +613,8 @@ class CNN(nn.Module):
         input = self.word_embeddings(input_sentences)
 
         #print('\n input.size() 1: ', input.size(), end='')
-        # input.size() = (batch_size, num_seq, embedding_length) = torch.Size([32, 200, 300])
-
-        #input = input.unsqueeze(1)
-
-        #print(', input.size() 2: ', input.size(), end='')
-        # input.size() = (batch_size, 1, num_seq, embedding_length) = torch.Size([32, 1, 200, 300])
-
+        # input.size() = (batch_size, num_seq, embedding_length) = torch.Size([32, 1, 200, 300])
+        
         max_out1 = self.conv_block(input, self.conv1)
 
         #print(', max_out1.size(): ', max_out1.size(), end='')
