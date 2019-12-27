@@ -707,7 +707,7 @@ class LSTMClassifier(nn.Module):
 		self.lstm = nn.LSTM(embedding_length, hidden_size)
 		self.label = nn.Linear(hidden_size, output_size)
 		
-	def forward(self, input_sentence, batch_size=None):
+	def forward(self, input_sentence, batch_size=16): # TODO must fix this
 	
 		""" 
 		Parameters
