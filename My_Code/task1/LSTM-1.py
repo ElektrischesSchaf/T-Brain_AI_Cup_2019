@@ -75,8 +75,8 @@ def write_config(filename, with_time=False):
 embedding_dim = 300
 hidden_dim = 500
 learning_rate = 2e-5
-max_epoch = 25
-batch_size = 10 # Must be one, since we have test dataset
+max_epoch = 100
+batch_size = 15
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
