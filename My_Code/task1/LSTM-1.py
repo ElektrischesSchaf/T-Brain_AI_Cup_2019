@@ -75,7 +75,7 @@ def write_config(filename, with_time=False):
 embedding_dim = 300
 hidden_dim = 256
 learning_rate = 2e-5
-max_epoch = 50
+max_epoch = 5
 batch_size = 1 # TODO fix this
 
 # write the hyperparameters into config.ini
@@ -896,7 +896,7 @@ plt.plot(train_loss, label='train')
 plt.plot(valid_loss, label='valid')
 plt.legend()
 plt.show()
-plt.savefig("Loss.png")
+plt.savefig("Loss_LSTM-1.png")
 
 plt.figure(figsize=(7,5))
 plt.title('F1 Score')
@@ -904,8 +904,10 @@ plt.plot(train_f1, label='train')
 plt.plot(valid_f1, label='valid')
 plt.legend()
 plt.show()
-plt.savefig("F1_score.png")
+plt.savefig("F1_score_LSTM-1.png")
 
+best_score, best_epoch=max([[l['f1'], idx] for idx, l in enumerate(history['valid'])])
+print('best_score= ', best_score, ', best_epoch= ', best_epoch, '\n')
 print('Best F1 score ', max([[l['f1'], idx] for idx, l in enumerate(history['valid'])]))
 
 
@@ -915,7 +917,7 @@ print('Best F1 score ', max([[l['f1'], idx] for idx, l in enumerate(history['val
 # This is the Prediction cell.
 
 # fill the epoch of the lowest val_loss to best_model
-best_model = 9
+best_model = best_epoch
 model.load_state_dict(state_dict=torch.load(os.path.join(CWD,'model_LSTM/model.pkl.{}'.format(best_model))))
 model.train(False)
 # double ckeck the best_model_score
