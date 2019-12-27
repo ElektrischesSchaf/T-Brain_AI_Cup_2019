@@ -707,7 +707,7 @@ class LSTMClassifier(nn.Module):
 		self.lstm = nn.LSTM(embedding_length, hidden_size)
 		self.label = nn.Linear(hidden_size, output_size)
 		
-	def forward(self, input_sentence, batch_size=16): # TODO must fix this
+	def forward(self, input_sentence, batch_size=None): # TODO must fix this
 	
 		""" 
 		Parameters
@@ -724,9 +724,13 @@ class LSTMClassifier(nn.Module):
 		
 		''' Here we will map all the indexes present in the input sequence to the corresponding word vector using our pre-trained word_embedddins.'''
 		# input_sentence.size() = (batch_size, 1, num of words)
+		print('1 input.size()=', input.size(), '\n')
 		input = self.word_embeddings(input_sentence) # embedded input of shape = (batch_size, 1, num of words,  embedding_length)
+        print('2 input.size()=', input.size(), '\n')
 		input=input.squeeze(1) # embedded input of shape = (batch_size, num of words,  embedding_length)
+        print('3 input.size()=', input.size(), '\n')
 		input = input.permute(1, 0, 2) # input.size() = (num_sequences, batch_size, embedding_length)
+        print('4 input.size()=', input.size(), '\n')
 		if batch_size is None:
 			h_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial hidden state of the LSTM
 			c_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial cell state of the LSTM
