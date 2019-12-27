@@ -606,6 +606,7 @@ class LSTMClassifier(nn.Module):
 		# input.size() = (num_sequences, batch_size, embedding_length)
 
 		if batch_size is None:
+			self.batch_size_LSTM=10
 			print('self.batch_size_LSTM= ', self.batch_size_LSTM, '\n')
 			h_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial hidden state of the LSTM
 			c_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial cell state of the LSTM
@@ -729,7 +730,7 @@ def save(epoch):
 # In[ ]:
 
 # LSTM (batch_size, output_size, hidden_size, vocab_size, embedding_length, weights)
-model = LSTMClassifier (batch_size, 6, hidden_dim, max_words, embedding_dim, embedding_matrix)
+model = LSTMClassifier(batch_size, 6, hidden_dim, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
