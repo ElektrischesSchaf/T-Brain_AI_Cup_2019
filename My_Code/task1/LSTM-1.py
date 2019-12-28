@@ -73,9 +73,9 @@ def write_config(filename, with_time=False):
 ### Run this cell for renewing the hyperparameters
 
 embedding_dim = 300
-hidden_dim = 500
+hidden_dim = 1000
 learning_rate = 2e-5
-max_epoch = 100
+max_epoch = 50
 batch_size = 15
 
 # write the hyperparameters into config.ini
@@ -189,41 +189,6 @@ def collect_words(data_path, n_workers=4):
         words = set(sum(chunks.get(), []))
         
     return words
-    '''
-    print(words)
-    {'scrambling',
-    'fitbit',
-    'x-y',
-    'usv',
-    'feeds',
-    'ganglia',
-    'reconciling',
-    'hack',
-    'multi-modality',
-    'physics',
-    'compartment',
-    'pre-publication',
-    'sensitivity-based',
-    'hindex',
-    'lpi',
-    'astor4android',
-    'downstream',
-    'representation/estimation',
-    'pull-in',
-    '10^60',
-    'proof-program',
-    'cross-checking',
-    'sub-block',
-    'multi-player',
-    'wsns',
-    'uncommon',
-    'un-normalized',
-    ...
-    '''
-
-
-# In[ ]:
-
 
 words = set()
 words |= collect_words(os.path.join(CWD,'data/trainset.csv'))
@@ -238,41 +203,6 @@ word_dict = {'<pad>':PAD_TOKEN,'<unk>':UNK_TOKEN}
 
 for word in words:
     word_dict[word]=len(word_dict) # len(word_dict)= 34966
-
-    '''
-    print(len(word_dict))
-    i = 0
-    for item in word_dict.items():
-        if i > 20:
-            break
-        print(item)
-        i = i + 1
-
-    ('<pad>', 0)
-    ('<unk>', 1)
-    ('scrambling', 2)
-    ('fitbit', 3)
-    ('x-y', 4)
-    ('usv', 5)
-    ('feeds', 6)
-    ('ganglia', 7)
-    ('reconciling', 😎
-    ('hack', 9)
-    ('multi-modality', 10)
-    ('physics', 11)
-    ('compartment', 12)
-    ('pre-publication', 13)
-    ('sensitivity-based', 14)
-    ('hindex', 15)
-    ('lpi', 16)
-    ('astor4android', 17)
-    ('downstream', 18)
-    ('representation/estimation', 19)
-    ('pull-in', 20)
-    '''
-
-# In[ ]:
-
 
 with open(os.path.join(CWD,'dicitonary.pkl'),'wb') as f:
     pickle.dump(word_dict, f)
@@ -451,7 +381,7 @@ valid = get_dataset(os.path.join(CWD,'data/validset.csv'), word_dict, n_workers=
 print('[INFO] Start processing testset...')
 test = get_dataset(os.path.join(CWD,'data/testset.csv'), word_dict, n_workers=4)
 
-def sperate_dict( the_list ):
+def seperate_dict( the_list ):
     output=[]
     for row in  the_list: # row={'Abstract':[[],[],...], 'Label':[[],[],...]}
         #print('row=', row, '\n')
@@ -468,9 +398,9 @@ def sperate_dict( the_list ):
             output.append( new_dict.copy() )
     return output
 
-train=sperate_dict(train)
-valid=sperate_dict(valid)
-test=sperate_dict(test)
+train=seperate_dict(train)
+valid=seperate_dict(valid)
+test=seperate_dict(test)
 
 # ### Create a dataset class for the abstract dataset
 # `torch.utils.data.Dataset` is an abstract class representing a dataset.<br />Your custom dataset should inherit Dataset and override the following methods:

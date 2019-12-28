@@ -366,14 +366,14 @@ valid = get_dataset(os.path.join(CWD,'data/validset.csv'), word_dict, n_workers=
 print('[INFO] Start processing testset...')
 test = get_dataset(os.path.join(CWD,'data/testset.csv'), word_dict, n_workers=4)
 
-def sperate_dict( the_list ):
+def seperate_dict( the_list ):
     output=[]
     for row in  the_list: # row={'Abstract':[[],[],...], 'Label':[[],[],...]}
         #print('row=', row, '\n')
         #if ('Abstract' in row)and('Label' in row): # suspecious
         for i in range(len(row['Abstract']) ):
             new_dict={}
-            print('row= ', row, ' ')
+            #print('row= ', row, ' ')
             #print('in Abstact key= ', row['Abstract'][i], '\n in Label key= ', row['Label'][i], '\n')
             new_dict['Abstract']=[ row['Abstract'][i] ]
 
@@ -383,9 +383,9 @@ def sperate_dict( the_list ):
             output.append( new_dict.copy() )
     return output
 
-train=sperate_dict(train)
-valid=sperate_dict(valid)
-test=sperate_dict(test)
+train=seperate_dict(train)
+valid=seperate_dict(valid)
+test=seperate_dict(test)
 
 # ### Create a dataset class for the abstract dataset
 # `torch.utils.data.Dataset` is an abstract class representing a dataset.<br />Your custom dataset should inherit Dataset and override the following methods:
@@ -602,7 +602,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 ### Helper functions for scoring
-threshold=0.4
+threshold=0.3 # 0.3, 61%
 class F1():
     def __init__(self):
         self.threshold = threshold
