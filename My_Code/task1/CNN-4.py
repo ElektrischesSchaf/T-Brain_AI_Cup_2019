@@ -111,6 +111,11 @@ dataset.drop('Authors',axis=1,inplace=True)
 dataset['Abstract'] = dataset['Abstract'].str.lower()
 #dataset['Task 1'] = dataset['Task 1'].str.lower()
 
+from nltk.stem import WordNetLemmatizer 
+lemmatizer = WordNetLemmatizer()
+for i in range(len(dataset['Abstract'])):
+    dataset['Abstract'][i] = lemmatizer.lemmatize(dataset['Abstract'][i])
+
 #for i in range(len(dataset['Abstract'])):
 #    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
@@ -143,6 +148,9 @@ dataset.drop('Created Date',axis=1, inplace=True)
 dataset.drop('Authors',axis=1,inplace=True)
 dataset['Abstract'] = dataset['Abstract'].str.lower()
 
+for i in range(len(dataset['Abstract'])):
+    dataset['Abstract'][i] = lemmatizer.lemmatize(dataset['Abstract'][i])
+
 #for i in range(len(dataset['Abstract'])):
 #    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
@@ -156,8 +164,7 @@ dataset.to_csv(os.path.join(CWD,'data/testset.csv'),index=False)
 
 from multiprocessing import Pool
 from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer 
-lemmatizer = WordNetLemmatizer()
+
 def collect_words(data_path, n_workers=4):
     df = pd.read_csv(data_path, dtype=str)
 
@@ -175,7 +182,6 @@ def collect_words(data_path, n_workers=4):
     with Pool(n_workers) as pool:
         # word_tokenize for word-word separation
         chunks = pool.map_async(word_tokenize, chunks)
-        chunks = pool.map_async(lemmatizer.lemmatize, chunks)
         # extract words
         words = set(sum(chunks.get(), []))
         
