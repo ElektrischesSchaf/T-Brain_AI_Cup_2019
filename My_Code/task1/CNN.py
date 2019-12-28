@@ -469,13 +469,14 @@ testData = AbstractDataset(test, PAD_TOKEN, max_len = 64)
 
 # CNN model
 class CNN(nn.Module):
-    def __init__(self, batch_size, output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights):
+    def __init__(self, batch_size, hidden_size, output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights):
         super(CNN, self).__init__()
         self.batch_size = batch_size
         #self.output_size = output_size
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.kernel_heights = kernel_heights
+        self.hidden_size = hidden_size
         self.stride = stride
         self.padding = padding
         self.vocab_size = vocab_size
@@ -491,7 +492,13 @@ class CNN(nn.Module):
         self.conv6 = nn.Conv2d( in_channels, out_channels, (kernel_heights[5], embedding_length), stride, padding=0)
         self.conv7 = nn.Conv2d( in_channels, out_channels, (kernel_heights[6], embedding_length), stride, padding=0)
         self.dropout = nn.Dropout(keep_probab)
-        self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
+
+        self.l1 = nn.Linear(len(kernel_heights)*out_channels, int( len(kernel_heights)*out_channels/2) )
+        torch.nn.init.xavier_normal_(self.l1.weight)
+
+        self.label = nn.Linear(int( len(kernel_heights)*out_channels/2), output_size )
+
+        #self.label = nn.Linear( len(kernel_heights)*out_channels, output_size )
     def conv_block(self, input, conv_layer):
         conv_out = conv_layer(input)
         #print('\nconv_out.size()= ', conv_out.size(), end=' ')
@@ -582,6 +589,8 @@ class CNN(nn.Module):
 
         #print(', fc_in.size(): ', all_out.size(), end='')
         # fc_in.size()) = (batch_size, num_kernels*out_channels) =  torch.Size([batch_size, batch_size * kernel_heights]) 
+
+        fc_in=torch.relu(self.l1(fc_in))
 
         logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
 
@@ -707,8 +716,8 @@ def save(epoch):
 #model = Net(len(word_dict))
 
 # CNN model
-# batch_size,  output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 6, 1, 25, [2, 3, 4, 5, 6, 7, 8], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
+# batch_size, hidden_dim, output_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
+model = CNN (batch_size, hidden_dim, 6, 1, 25, [2, 3, 4, 5, 6, 7, 8], 1, 0, 0, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
