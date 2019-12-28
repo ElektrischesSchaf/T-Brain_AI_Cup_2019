@@ -76,7 +76,7 @@ embedding_dim = 300
 hidden_dim = 1000
 learning_rate = 2e-5
 max_epoch = 50
-batch_size = 15
+batch_size = 32 # 15 or 32 doesn't matter
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
