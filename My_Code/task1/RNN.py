@@ -510,7 +510,13 @@ class RNN(nn.Module):
         self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
         self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False)
         self.rnn = nn.RNN(embedding_length, hidden_size, num_layers=2, bidirectional=True)
-        self.label = nn.Linear(4*hidden_size, output_size)
+
+        self.l1 = nn.Linear(4*hidden_size, 2*hidden_size )
+        torch.nn.init.xavier_normal_(self.l1.weight)
+
+        self.label = nn.Linear(2*hidden_size, output_size)
+
+        #self.label = nn.Linear(4*hidden_size, output_size)
     
     def forward(self, input_sentences, batch_size=None):
         
@@ -541,6 +547,9 @@ class RNN(nn.Module):
         h_n = h_n.permute(1, 0, 2) # h_n.size() = (batch_size, 4, hidden_size)
         h_n = h_n.contiguous().view(h_n.size()[0], h_n.size()[1]*h_n.size()[2])
         # h_n.size() = (batch_size, 4*hidden_size)
+
+        h_n=torch.relu(self.l1(h_n))
+        
         logits = self.label(h_n) # logits.size() = (batch_size, output_size)
 
         logits=logits.unsqueeze(1)

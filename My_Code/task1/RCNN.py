@@ -512,7 +512,11 @@ class RCNN(nn.Module):
         self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False) # Assigning the look-up table to the pre-trained GloVe word embedding.
         self.dropout = 0.8
         self.lstm = nn.LSTM(embedding_length, hidden_size, dropout=self.dropout, bidirectional=True)
-        self.W2 = nn.Linear(2*hidden_size+embedding_length, hidden_size)
+        self.W2 = nn.Linear(2*hidden_size+embedding_length, hidden_size+embedding_length)
+
+        self.l1 = nn.Linear(hidden_size+embedding_length, hidden_size)
+        torch.nn.init.xavier_normal_(self.l1.weight)
+
         self.label = nn.Linear(hidden_size, output_size)
         
     def forward(self, input_sentence, batch_size=None):
@@ -554,7 +558,10 @@ class RCNN(nn.Module):
         output, (final_hidden_state, final_cell_state) = self.lstm(input, (h_0, c_0))
         
         final_encoding = torch.cat((output, input), 2).permute(1, 0, 2)
-        y = self.W2(final_encoding) # y.size() = (batch_size, num_sequences, hidden_size)
+        y = self.W2(final_encoding)
+
+        y=torch.relu(self.l1(y)) # y.size() = (batch_size, num_sequences, hidden_size)
+
         y = y.permute(0, 2, 1) # y.size() = (batch_size, hidden_size, num_sequences)
         y = F.max_pool1d(y, y.size()[2]) # y.size() = (batch_size, hidden_size, 1)
         y = y.squeeze(2)
