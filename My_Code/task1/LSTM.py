@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-# F1-score = 28%, multiple out channels, multiple FC layers
+# Crack AbstractDataset and make adjustment by a seperate_dict function
+# Re-write CNN model
 # In[ ]:
 
 
@@ -13,6 +14,7 @@ import pickle, json, re, time
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.autograd import Variable
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
@@ -55,7 +57,7 @@ def write_config(filename, with_time=False):
     if with_time == False:
         with open("{}.ini".format(filename), 'w') as configfile:
             config.write(configfile)
-        return 'config'            
+        return 'config'
     else:
         timestr = time.strftime("%Y%m%d_%H%M%S")
         filename = filename + '_' + timestr
@@ -71,10 +73,10 @@ def write_config(filename, with_time=False):
 ### Run this cell for renewing the hyperparameters
 
 embedding_dim = 300
-hidden_dim = 512
-learning_rate = 1e-4
-max_epoch = 25
-batch_size = 1
+hidden_dim = 1000
+learning_rate = 2e-5
+max_epoch = 50
+batch_size = 15
 
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
@@ -110,8 +112,14 @@ dataset.drop('Authors',axis=1,inplace=True)
 dataset['Abstract'] = dataset['Abstract'].str.lower()
 #dataset['Task 1'] = dataset['Task 1'].str.lower()
 
+from nltk.stem import WordNetLemmatizer 
+lemmatizer = WordNetLemmatizer()
+
 for i in range(len(dataset['Abstract'])):
-    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
+    dataset['Abstract'][i] = lemmatizer.lemmatize(dataset['Abstract'][i])
+
+#for i in range(len(dataset['Abstract'])):
+#    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
 
 # In[ ]:
@@ -143,7 +151,10 @@ dataset.drop('Authors',axis=1,inplace=True)
 dataset['Abstract'] = dataset['Abstract'].str.lower()
 
 for i in range(len(dataset['Abstract'])):
-    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
+    dataset['Abstract'][i] = lemmatizer.lemmatize(dataset['Abstract'][i])
+
+#for i in range(len(dataset['Abstract'])):
+#    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
 dataset.to_csv(os.path.join(CWD,'data/testset.csv'),index=False)
 
@@ -158,7 +169,7 @@ from nltk.tokenize import word_tokenize
 
 def collect_words(data_path, n_workers=4):
     df = pd.read_csv(data_path, dtype=str)
-        
+
     # create a list for storing sentences
     sent_list = []
     for i in df.iterrows():
@@ -178,41 +189,6 @@ def collect_words(data_path, n_workers=4):
         words = set(sum(chunks.get(), []))
         
     return words
-    '''
-    print(words)
-    {'scrambling',
-    'fitbit',
-    'x-y',
-    'usv',
-    'feeds',
-    'ganglia',
-    'reconciling',
-    'hack',
-    'multi-modality',
-    'physics',
-    'compartment',
-    'pre-publication',
-    'sensitivity-based',
-    'hindex',
-    'lpi',
-    'astor4android',
-    'downstream',
-    'representation/estimation',
-    'pull-in',
-    '10^60',
-    'proof-program',
-    'cross-checking',
-    'sub-block',
-    'multi-player',
-    'wsns',
-    'uncommon',
-    'un-normalized',
-    ...
-    '''
-
-
-# In[ ]:
-
 
 words = set()
 words |= collect_words(os.path.join(CWD,'data/trainset.csv'))
@@ -227,41 +203,6 @@ word_dict = {'<pad>':PAD_TOKEN,'<unk>':UNK_TOKEN}
 
 for word in words:
     word_dict[word]=len(word_dict) # len(word_dict)= 34966
-
-    '''
-    print(len(word_dict))
-    i = 0
-    for item in word_dict.items():
-        if i > 20:
-            break
-        print(item)
-        i = i + 1
-
-    ('<pad>', 0)
-    ('<unk>', 1)
-    ('scrambling', 2)
-    ('fitbit', 3)
-    ('x-y', 4)
-    ('usv', 5)
-    ('feeds', 6)
-    ('ganglia', 7)
-    ('reconciling', 😎
-    ('hack', 9)
-    ('multi-modality', 10)
-    ('physics', 11)
-    ('compartment', 12)
-    ('pre-publication', 13)
-    ('sensitivity-based', 14)
-    ('hindex', 15)
-    ('lpi', 16)
-    ('astor4android', 17)
-    ('downstream', 18)
-    ('representation/estimation', 19)
-    ('pull-in', 20)
-    '''
-
-# In[ ]:
-
 
 with open(os.path.join(CWD,'dicitonary.pkl'),'wb') as f:
     pickle.dump(word_dict, f)
@@ -423,7 +364,9 @@ def preprocess_sample(data, word_dict):
     
     ## convert the labels into one-hot encoding
     if 'Task 1' in data:
-        processed['Label'] = [label_to_onehot(label) for label in data['Task 1'].split(' ')]
+
+        processed['Label'] = [label_to_onehot(label) for label in data['Task 1'].split(' ')] 
+        # processed['Label'] is a 2D list
         
     return processed
 
@@ -438,6 +381,26 @@ valid = get_dataset(os.path.join(CWD,'data/validset.csv'), word_dict, n_workers=
 print('[INFO] Start processing testset...')
 test = get_dataset(os.path.join(CWD,'data/testset.csv'), word_dict, n_workers=4)
 
+def seperate_dict( the_list ):
+    output=[]
+    for row in  the_list: # row={'Abstract':[[],[],...], 'Label':[[],[],...]}
+        #print('row=', row, '\n')
+        #if ('Abstract' in row)and('Label' in row): # suspecious
+        for i in range(len(row['Abstract']) ):
+            new_dict={}
+            #print('row= ', row, ' ')
+            #print('in Abstact key= ', row['Abstract'][i], '\n in Label key= ', row['Label'][i], '\n')
+            new_dict['Abstract']=[ row['Abstract'][i] ]
+
+            if 'Label' in row:
+                new_dict['Label']=[ row['Label'][i] ]
+
+            output.append( new_dict.copy() )
+    return output
+
+train=seperate_dict(train)
+valid=seperate_dict(valid)
+test=seperate_dict(test)
 
 # ### Create a dataset class for the abstract dataset
 # `torch.utils.data.Dataset` is an abstract class representing a dataset.<br />Your custom dataset should inherit Dataset and override the following methods:
@@ -518,253 +481,83 @@ trainData = AbstractDataset(train, PAD_TOKEN, max_len = 64)
 validData = AbstractDataset(valid, PAD_TOKEN, max_len = 64)
 testData = AbstractDataset(test, PAD_TOKEN, max_len = 64)
 
-print('type of trainData', type(trainData), '\n')
-print('type of validData', type(validData), '\n')
-print('type of testData', type(testData), '\n')
+#print('type of trainData', type(trainData), '\n')
+#print('type of validData', type(validData), '\n')
+#print('type of testData', type(testData), '\n')
 
 
-# In[ ]:
-
-# The original GRU model
-class Net(nn.Module):
-    def __init__(self, vocabulary_size): # vocabulary_size is the lenght of word_dict
-        super(Net, self).__init__()
-        self.embedding_size = embedding_dim # 100
-        self.hidden_dim = hidden_dim # 512
-        '''
-        接着就是word embedding的定义nn.Embedding(2, 5)，这里的2表示有2个词，5表示5维，
-        其实也就是一个2×5的矩阵，所以如果你有1000个词，每个词希望是100维，
-        你就可以这样建立一个word embedding，nn.Embedding(1000, 100)。
-        '''
-        self.embedding = nn.Embedding(vocabulary_size, self.embedding_size)  # vocabulary_size=lenght of word_dict, embedding_size=100
-        self.embedding.weight = torch.nn.Parameter(embedding_matrix) # shape of embedding_matrix=(lenght of word_dict, embedding_size)
-        self.sent_rnn = nn.GRU(self.embedding_size,
-                                self.hidden_dim,
-                                bidirectional=True,
-                                batch_first=True)
+class LSTMClassifier(nn.Module):
+    def __init__(self, batch_size, output_size, hidden_size, vocab_size, embedding_length, weights):
+        super(LSTMClassifier, self).__init__()
         
-        self.l1 = nn.Linear(self.hidden_dim*2, self.hidden_dim)
-        torch.nn.init.xavier_normal_(self.l1.weight)
-        #self.layernorm1 = nn.LayerNorm(self.hidden_dim*2)
-        #self.layernorm2 = nn.LayerNorm(self.hidden_dim)
-        self.l2 = nn.Linear(self.hidden_dim, 6)
-
-    # b: batch_size
-    # s: number of sentences
-    # w: number of words
-    # e: embedding_dim
-    def forward(self, x):
-        # x = (16, num of sentences, num of words)
-        #print('In forward 1, shape of x = ', x.shape, end=' ')
-
-        x = self.embedding(x) # type of x = <class 'torch.Tensor'>
-
-        # x = (16, num of sentences, num of words, 100)
-        #print('In forward 2, shape of x = ', x.shape, end=' ')
-
-        b, s, w, e = x.shape        
-        x = x.view(b, s*w, e)
-
-        # x = (16, num of sentences X num of words, 100)
-        #print('In forward 3, shape of x = ', x.shape, end=' ')
+        """
+        Arguments
+        ---------
+        batch_size : Size of the batch which is same as the batch_size of the data returned by the TorchText BucketIterator
+        output_size : 2 = (pos, neg)
+        hidden_sie : Size of the hidden_state of the LSTM
+        vocab_size : Size of the vocabulary containing unique words
+        embedding_length : Embeddding dimension of GloVe word embeddings
+        weights : Pre-trained GloVe word_embeddings which we will use to create our word_embedding look-up table 
         
-        x, __ = self.sent_rnn(x)
-
-        # x = (16, num of sentences X num of words, 1024)
-        #print('In forward 4, shape of x = ', x.shape, end=' ')
-
-        x = x.view(b, s, w, -1)
-
-        # x = (16, num of sentences, num of words, 1024)
-        #print('In forward 5, shape of x = ', x.shape, end=' ')
-
-        x = torch.max(x, dim=2)[0]
-
-        # x = (16, num of sentences, 1024)
-        #print('In forward 6, shape of x = ', x.shape, end=' ')
-
-        #final_ht = x[-1]
+        """
         
-        #x = self.layernorm1(x)
+        self.batch_size_LSTM = batch_size
+        self.output_size = output_size
+        self.hidden_size = hidden_size
+        self.vocab_size = vocab_size
+        self.embedding_length = embedding_length
         
-        x = torch.relu(self.l1(x))
-
-        # x = (16, num of sentences, 512)
-        #print('In forward 7, shape of x = ', x.shape, end=' ')
+        self.word_embeddings = nn.Embedding(vocab_size, embedding_length)# Initializing the look-up table.
+        self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False) # Assigning the look-up table to the pre-trained GloVe word embedding.
+        self.lstm = nn.LSTM(embedding_length, hidden_size)
+        self.label = nn.Linear(hidden_size, output_size)
         
-        #x = self.layernorm2(x)
+    def forward(self, input_sentence, batch_size=None): # TODO must fix this    
+        """ 
+        Parameters
+        ----------
+        input_sentence: input_sentence of shape = (batch_size, num_sequences)
+        batch_size : default = None. Used only for prediction on a single sentence after training (batch_size = 1)
         
-        x = torch.sigmoid(self.l2(x))
-
-        # x = (16, num of sentences, 6)
-        #print('In forward 8, shape of x = ', x.shape, end=' ')
-
-        return x
-
-
-# In[]
-
-# CNN model
-
-class CNN(nn.Module):
-	def __init__(self, batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights):
-		super(CNN, self).__init__()
-
-		"""
-		Arguments
-		---------
-		batch_size : Size of each batch which is same as the batch_size of the data returned by the TorchText BucketIterator
-		output_size : 2 = (pos, neg)
-		in_channels : Number of input channels. Here it is 1 as the input data has dimension = (batch_size, num_seq, embedding_length)
-		out_channels : Number of output channels after convolution operation performed on the input matrix
-		kernel_heights : A list consisting of 3 different kernel_heights. Convolution will be performed 3 times and finally results from each kernel_height will be concatenated.
-		keep_probab : Probability of retaining an activation node during dropout operation
-		vocab_size : Size of the vocabulary containing unique words
-		embedding_length : Embedding dimension of GloVe word embeddings
-		weights : Pre-trained GloVe word_embeddings which we will use to create our word_embedding look-up table
-		--------
-		
-		"""
-		self.batch_size = batch_size
-		#self.output_size = output_size
-		self.in_channels = in_channels
-		self.out_channels = out_channels
-		self.kernel_heights = kernel_heights
-		self.stride = stride
-		self.padding = padding
-		self.vocab_size = vocab_size
-		self.embedding_length = embedding_length
-
-		self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
-		self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False)
-		self.conv1 = nn.Conv2d( in_channels, out_channels, (kernel_heights[0], embedding_length), stride, padding=0)
-		self.conv2 = nn.Conv2d( in_channels, out_channels, (kernel_heights[1], embedding_length), stride, padding=0)
-		self.conv3 = nn.Conv2d( in_channels, out_channels, (kernel_heights[2], embedding_length), stride, padding=0)
-		self.dropout = nn.Dropout(keep_probab)
-		#self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
-
-	def conv_block(self, input, conv_layer, b, s, w):
-
-		conv_out = conv_layer(input)
-		#print('\nconv_out.size()= ', conv_out.size(), end=' ')
-		# conv_out.size() = (batch_size, out_channels, dim, 1) 
-
-		activation = F.relu(conv_out.squeeze(3))
-		#print(' activation.size()= ', activation.size(), end=' ')
-		# activation.size() = (batch_size, out_channels, dim)
-
-		#print(' activation.size()[2]= ', activation.size()[2], end='')
-		# activation.size()[2]=
-
-		max_out=F.max_pool1d(activation, activation.size()[2])
-		#print(' 1 max_out.size()= ', max_out.size(), end=' ')
-		# maxpool_out.size() = (batch_size, out_channels, 1)
+        Returns
+        -------
+        Output of the linear layer containing logits for positive & negative class which receives its input as the final_hidden_state of the LSTM
+        final_output.shape = (batch_size, output_size)
         
-		max_out = max_out.squeeze(2)
-		#print(' 2 max_out.size()= ', max_out.size(), '\n')
-		# maxpool_out.size() = (batch_size, out_channels)
+        """
+        
+        ''' Here we will map all the indexes present in the input sequence to the corresponding word vector using our pre-trained word_embedddins.'''
 
-		return max_out
+        # input_sentence.size() = (batch_size, 1, num of words)
+        #print('1 input_sentence.size()=', input_sentence.size(), '\n')
 
-	def forward(self, input_sentences, batch_size=None):
+        input = self.word_embeddings(input_sentence)
+        # embedded input of shape = (batch_size, 1, num of words,  embedding_length)        
+        #print('2 input.size()=', input.size(), '\n')
+        
+        input=input.squeeze(1)
+        #print('3 input.size()=', input.size(), '\n')
+        #embedded input of shape = (batch_size, num of words,  embedding_length)
+        
+        input = input.permute(1, 0, 2)
+        #print('4 input.size()=', input.size(), '\n')
+        # input.size() = (num_sequences, batch_size, embedding_length)
 
-		"""
-		The idea of the Convolutional Neural Netwok for Text Classification is very simple. We perform convolution operation on the embedding matrix 
-		whose shape for each batch is (num_seq, embedding_length) with kernel of varying height but constant width which is same as the embedding_length.
-		We will be using ReLU activation after the convolution operation and then for each kernel height, we will use max_pool operation on each tensor 
-		and will filter all the maximum activation for every channel and then we will concatenate the resulting tensors. This output is then fully connected
-		to the output layers consisting two units which basically gives us the logits for both positive and negative classes.
+        if batch_size is None:
+            h_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial hidden state of the LSTM
+            c_0 = Variable(torch.zeros(1, self.batch_size_LSTM, self.hidden_size).cuda()) # Initial cell state of the LSTM
+            #print('size of h_0: ', h_0.size(), ', size of c_0: ', c_0.size(), '\n')
+        else:
+            h_0 = Variable(torch.zeros(1, batch_size, self.hidden_size).cuda())
+            c_0 = Variable(torch.zeros(1, batch_size, self.hidden_size).cuda())
+        output, (final_hidden_state, final_cell_state) = self.lstm(input, (h_0, c_0))
+        final_output = self.label(final_hidden_state[-1]) # final_hidden_state.size() = (1, batch_size, hidden_size) & final_output.size() = (batch_size, output_size)
 
-		Parameters
-		----------
-		input_sentences: input_sentences of shape = (batch_size, num_sequences)
-		batch_size : default = None. Used only for prediction on a single sentence after training (batch_size = 1)
-
-		Returns
-		-------
-		Output of the linear layer containing logits for pos & neg class.
-		logits.size() = (batch_size, output_size)
-
-		"""
-
-		input = self.word_embeddings(input_sentences)
-		b, s, w, e = input.shape
-
-		#print('\nIn forward, input.size() 1: ', input.size(), end='')
-		# input.size() = (batch_size, num of sent, num of words, embedding_length) = torch.Size([16, 11, 35, 100])
-
-		input=input.view(b*s, w, e)
-
-		#print('\nIn forward, input.size() 2: ', input.size(), end='')
-		# torch.Size = (batch_size*num of sent, num of words, embedding_length)
-
-		input = input.unsqueeze(1)
-
-		#print('\nIn forward, input.size() 3: ', input.size(), end='')
-		# torch.Size = (batch_size * num of sent, 1, num of words, embedding_length)
-
-		max_out1 = self.conv_block(input, self.conv1, b=b, s=s, w=w)
-
-		#print('\nIn forward, max_out1.size(): ', max_out1.size(), end='')
-		# max_out1.size() =  (batch_size * num of sent, out channels )
-
-		max_out2 = self.conv_block(input, self.conv2, b=b, s=s, w=w)
-
-		#print('\nIn forward, max_out2.size(): ', max_out2.size(), end='')
-		# max_out2.size() =  (batch_size * num of sent, out channels )
-
-		max_out3 = self.conv_block(input, self.conv3, b=b, s=s, w=w)
-
-		#print('\nIn forward, max_out3.size(): ', max_out3.size(), end='')
-		# max_out3.size() =  (batch_size * num of sent, out channels )
-
-		all_out = torch.cat((max_out1, max_out2, max_out3), 1)
-
-		#print('\nIn forward, all_out.size(): ', all_out.size(), end='')
-		# all_out.size() = (batch_size * num of sent, num_kernels * out_channels)
-
-		fc_in = self.dropout(all_out)
-
-		#print('\nIn forward, fc_in.size() 1: ', fc_in.size(), end='')
-		# fc_in.size()) = (batch_size, num_kernels*out_channels)
-
-		one=nn.Linear( self.out_channels * len(self.kernel_heights), int((self.out_channels*len(self.kernel_heights))*0.6 )) # (num of out channels * num of conv. layers, num of classes)
-		one.to(device)
-		fc_in.to(device)
-		fc_in=torch.relu(one(fc_in))
-
-		two=nn.Linear( int((self.out_channels*len(self.kernel_heights))*0.6), int((self.out_channels*len(self.kernel_heights))*0.3) )
-		two.to(device)
-		fc_in.to(device)
-		fc_in=torch.relu(two(fc_in))
-
-		three=nn.Linear(int((self.out_channels*len(self.kernel_heights))*0.3) , 6)
-		three.to(device)
-		fc_in.to(device)
-		fc_in=torch.relu(three(fc_in))
-
-		fc_in=fc_in.view( b, s, 6)
-
-		#print('\nIn forward, fc_in.size() 2: ', fc_in.size(), end='')
-		# fc_in.size()) =
-
-		#logits = self.label(fc_in)  # self.label = nn.Linear(len(kernel_heights)*out_channels, output_size)
-
-		logits=torch.sigmoid(fc_in)
-
-		#two=nn.Linear(s*w, 6)
-		#two.to(device)
-		#logits.to(device)
-		#logits=two(logits)
-
-		#print('\nIn forward, logits.size(): ', logits.size(), '\n')
-		# logits.size() = ( batch_size, output_size)  = torch.Size([, 2])
-
-		return logits
-
-
-
-# In[ ]:
+        final_output=final_output.unsqueeze(1)
+        final_output=torch.sigmoid(final_output)
+        
+        return final_output
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -774,10 +567,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 ### Helper functions for scoring
-
+threshold=0.3 # 0.3, 62%, epoch 42. 
 class F1():
     def __init__(self):
-        self.threshold = 0.5
+        self.threshold = threshold
         self.n_precision = 0
         self.n_recall = 0
         self.n_corrects = 0
@@ -832,6 +625,8 @@ def _run_epoch(epoch, mode):
 
         # Butters
         #print('In _run_epoch, i=', str(i), ' ', 'shape of x', x.shape, ' ', 'shape of y', y.shape, ' ', 'len of sent_len', len(sent_len), '\n')
+        if(x.size()[0] is not batch_size):
+            continue
         o_labels, batch_loss = _run_iter(x,y)
         if mode=="train":
             opt.zero_grad()
@@ -865,21 +660,17 @@ def _run_iter(x,y):
     return o_labels, l_loss
 
 def save(epoch):
-    if not os.path.exists(os.path.join(CWD,'model')):
-        os.makedirs(os.path.join(CWD,'model'))
-    torch.save(model.state_dict(), os.path.join( CWD,'model/model.pkl.'+str(epoch) ))
-    with open( os.path.join( CWD,'model/history.json'), 'w') as f:
+    if not os.path.exists(os.path.join(CWD,'model_LSTM')):
+        os.makedirs(os.path.join(CWD,'model_LSTM'))
+    torch.save(model.state_dict(), os.path.join( CWD,'model_LSTM/model.pkl.'+str(epoch) ))
+    with open( os.path.join( CWD,'model_LSTM/history.json'), 'w') as f:
         json.dump(history, f, indent=4)
 
 
 # In[ ]:
 
-# Original GRU model
-#model = Net(len(word_dict))
-
-# CNN model
-# batch_size, in_channels, out_channels, kernel_heights, stride, padding, keep_probab, vocab_size, embedding_length, weights
-model = CNN (batch_size, 1, 50, [3, 3, 3], 1, 0, 0.9, max_words, embedding_dim, embedding_matrix)
+# LSTM (batch_size, output_size, hidden_size, vocab_size, embedding_length, weights)
+model = LSTMClassifier(batch_size, 6, hidden_dim, max_words, embedding_dim, embedding_matrix)
 
 opt = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 criteria = torch.nn.BCELoss()
@@ -900,7 +691,7 @@ for epoch in range(max_epoch):
     save(epoch)
 
 # Plot the training results 
-with open(os.path.join(CWD,'model/history.json'), 'r') as f:
+with open(os.path.join(CWD,'model_LSTM/history.json'), 'r') as f:
     history = json.loads(f.read())
     
 train_loss = [l['loss'] for l in history['train']]
@@ -914,7 +705,7 @@ plt.plot(train_loss, label='train')
 plt.plot(valid_loss, label='valid')
 plt.legend()
 plt.show()
-plt.savefig("Loss.png")
+plt.savefig("Loss_LSTM.png")
 
 plt.figure(figsize=(7,5))
 plt.title('F1 Score')
@@ -922,8 +713,10 @@ plt.plot(train_f1, label='train')
 plt.plot(valid_f1, label='valid')
 plt.legend()
 plt.show()
-plt.savefig("F1_score.png")
+plt.savefig("F1_score_LSTM.png")
 
+best_score, best_epoch=max([[l['f1'], idx] for idx, l in enumerate(history['valid'])])
+print('best_score= ', best_score, ', best_epoch= ', best_epoch, '\n')
 print('Best F1 score ', max([[l['f1'], idx] for idx, l in enumerate(history['valid'])]))
 
 
@@ -933,24 +726,30 @@ print('Best F1 score ', max([[l['f1'], idx] for idx, l in enumerate(history['val
 # This is the Prediction cell.
 
 # fill the epoch of the lowest val_loss to best_model
-best_model = 9
-model.load_state_dict(state_dict=torch.load(os.path.join(CWD,'model/model.pkl.{}'.format(best_model))))
+best_model = best_epoch
+model.load_state_dict(state_dict=torch.load(os.path.join(CWD,'model_LSTM/model.pkl.{}'.format(best_model))))
 model.train(False)
 # double ckeck the best_model_score
 _run_epoch(1, 'valid')
 
 # start testing
 dataloader = DataLoader(dataset=testData,
-                            batch_size=64,
+                            batch_size=batch_size,
                             shuffle=False,
                             collate_fn=testData.collate_fn,
                             num_workers=8)
 trange = tqdm(enumerate(dataloader), total=len(dataloader), desc='Predict')
 prediction = []
+#print('1 prediction= ', prediction,'\n')
 for i, (x, y, sent_len) in trange:
+    if(x.size()[0] is not batch_size):
+        continue
     o_labels = model(x.to(device))
-    o_labels = o_labels>0.5
+    #print('In Prediction Cell, o_labels= ', o_labels)
+    o_labels = o_labels>threshold
     for idx, o_label in enumerate(o_labels):
+        #print('In Prediction Cell:', '\n', 'sent_len= ', sent_len,'\n')
+        #print('2 prediction= ', prediction,'\n')
         prediction.append(o_label[:sent_len[idx]].to('cpu'))
 prediction = torch.cat(prediction).detach().numpy().astype(int)
 
@@ -991,7 +790,7 @@ def SubmitGenerator(prediction, sampleFile, public=True, filename='prediction.cs
 SubmitGenerator(prediction,
                 os.path.join(CWD,'data/task1_sample_submission.csv'), 
                 True, 
-                os.path.join(CWD,'submission_CNN-2.csv'))
+                os.path.join(CWD,'submission_LSTM.csv'))
 
 #get_ipython().run_line_magic('tensorboard', '--logdir=task1/test_experiment')
 tEnd=time.time()
