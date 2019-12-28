@@ -156,7 +156,8 @@ dataset.to_csv(os.path.join(CWD,'data/testset.csv'),index=False)
 
 from multiprocessing import Pool
 from nltk.tokenize import word_tokenize
-
+from nltk.stem import WordNetLemmatizer 
+lemmatizer = WordNetLemmatizer()
 def collect_words(data_path, n_workers=4):
     df = pd.read_csv(data_path, dtype=str)
 
@@ -174,7 +175,7 @@ def collect_words(data_path, n_workers=4):
     with Pool(n_workers) as pool:
         # word_tokenize for word-word separation
         chunks = pool.map_async(word_tokenize, chunks)
-
+        chunks = pool.map_async(lemmatizer.lemmatize, chunks)
         # extract words
         words = set(sum(chunks.get(), []))
         
