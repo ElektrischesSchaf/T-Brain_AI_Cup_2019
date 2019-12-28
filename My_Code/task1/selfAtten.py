@@ -111,7 +111,11 @@ dataset.drop('Created Date',axis=1, inplace=True)
 dataset.drop('Authors',axis=1,inplace=True)
 dataset['Abstract'] = dataset['Abstract'].str.lower()
 #dataset['Task 1'] = dataset['Task 1'].str.lower()
+from nltk.stem import WordNetLemmatizer 
+lemmatizer = WordNetLemmatizer()
 
+for i in range(len(dataset['Abstract'])):
+    dataset['Abstract'][i] = lemmatizer.lemmatize(dataset['Abstract'][i])
 #for i in range(len(dataset['Abstract'])):
 #    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
 
@@ -143,6 +147,9 @@ dataset.drop('Categories',axis=1,inplace=True)
 dataset.drop('Created Date',axis=1, inplace=True)
 dataset.drop('Authors',axis=1,inplace=True)
 dataset['Abstract'] = dataset['Abstract'].str.lower()
+
+for i in range(len(dataset['Abstract'])):
+    dataset['Abstract'][i] = lemmatizer.lemmatize(dataset['Abstract'][i])
 
 #for i in range(len(dataset['Abstract'])):
 #    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
