@@ -572,7 +572,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 ### Helper functions for scoring
-threshold=0.4
+threshold=0.3 # 0.4, 62.1%, epoch 13.   0.3, 62.8%, 16. 
 class F1():
     def __init__(self):
         self.threshold = threshold
