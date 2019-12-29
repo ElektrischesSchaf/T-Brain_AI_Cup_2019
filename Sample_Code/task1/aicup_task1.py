@@ -74,7 +74,7 @@ hidden_dim = 512
 learning_rate = 1e-5
 max_epoch = 65
 batch_size = 16
-
+num_layers = 2
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
 
@@ -542,6 +542,7 @@ class Net(nn.Module):
         self.sent_rnn = nn.GRU(self.embedding_size,
                                 self.hidden_dim,
                                 bidirectional=True,
+                                num_layers = num_layers,
                                 batch_first=True)
         
         self.l1 = nn.Linear(self.hidden_dim*2, self.hidden_dim)
