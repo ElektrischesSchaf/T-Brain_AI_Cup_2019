@@ -75,7 +75,7 @@ hidden_dim = 1000
 learning_rate = 1e-5
 max_epoch = 50
 batch_size = 15
-num_layers = 2
+num_layers = 1
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
 
