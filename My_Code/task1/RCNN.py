@@ -75,7 +75,7 @@ hidden_dim = 1000
 learning_rate = 1e-5
 max_epoch = 50
 batch_size = 32 # 15 or 32 doesn't matter
-
+num_layers=2
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
 
@@ -509,7 +509,7 @@ class RCNN(nn.Module):
         self.word_embeddings = nn.Embedding(vocab_size, embedding_length)# Initializing the look-up table.
         self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False) # Assigning the look-up table to the pre-trained GloVe word embedding.
         self.dropout = 0.8
-        self.lstm = nn.LSTM(embedding_length, hidden_size, dropout=self.dropout, bidirectional=True)
+        self.lstm = nn.LSTM(embedding_length, hidden_size, dropout=self.dropout, bidirectional=True, num_layers=num_layers)
         self.W2 = nn.Linear(2*hidden_size+embedding_length, hidden_size+embedding_length)
 
         self.l1 = nn.Linear(hidden_size+embedding_length, hidden_size)
@@ -547,11 +547,11 @@ class RCNN(nn.Module):
 
         input = input.permute(1, 0, 2) # input.size() = (num_sequences, batch_size, embedding_length)
         if batch_size is None:
-            h_0 = Variable(torch.zeros(2, self.batch_size, self.hidden_size).cuda()) # Initial hidden state of the LSTM
-            c_0 = Variable(torch.zeros(2, self.batch_size, self.hidden_size).cuda()) # Initial cell state of the LSTM
+            h_0 = Variable(torch.zeros(num_layers*2, self.batch_size, self.hidden_size).cuda()) # Initial hidden state of the LSTM
+            c_0 = Variable(torch.zeros(num_layers*2, self.batch_size, self.hidden_size).cuda()) # Initial cell state of the LSTM
         else:
-            h_0 = Variable(torch.zeros(2, batch_size, self.hidden_size).cuda())
-            c_0 = Variable(torch.zeros(2, batch_size, self.hidden_size).cuda())
+            h_0 = Variable(torch.zeros(num_layers*2, batch_size, self.hidden_size).cuda())
+            c_0 = Variable(torch.zeros(num_layers*2, batch_size, self.hidden_size).cuda())
 
         output, (final_hidden_state, final_cell_state) = self.lstm(input, (h_0, c_0))
         

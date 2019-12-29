@@ -75,7 +75,7 @@ hidden_dim = 1000
 learning_rate = 1e-5
 max_epoch = 50
 batch_size = 15
-
+num_layers=2
 # write the hyperparameters into config.ini
 #write_config(os.path.join(CWD,"config"))
 
@@ -507,7 +507,7 @@ class RNN(nn.Module):
         
         self.word_embeddings = nn.Embedding(vocab_size, embedding_length)
         self.word_embeddings.weight = nn.Parameter(weights, requires_grad=False)
-        self.rnn = nn.RNN(embedding_length, hidden_size, num_layers=2, bidirectional=True)
+        self.rnn = nn.RNN(embedding_length, hidden_size, num_layers=num_layers, bidirectional=True)
 
         self.l1 = nn.Linear(4*hidden_size, 2*hidden_size )
         torch.nn.init.xavier_normal_(self.l1.weight)
@@ -537,9 +537,9 @@ class RNN(nn.Module):
 
         input = input.permute(1, 0, 2)
         if batch_size is None:
-            h_0 = Variable(torch.zeros(4, self.batch_size, self.hidden_size).cuda()) # 4 = num_layers*num_directions
+            h_0 = Variable(torch.zeros(num_layers*2, self.batch_size, self.hidden_size).cuda()) # 4 = num_layers*num_directions
         else:
-            h_0 =  Variable(torch.zeros(4, batch_size, self.hidden_size).cuda())
+            h_0 =  Variable(torch.zeros(num_layers*2, batch_size, self.hidden_size).cuda())
         output, h_n = self.rnn(input, h_0)
         # h_n.size() = (4, batch_size, hidden_size)
         h_n = h_n.permute(1, 0, 2) # h_n.size() = (batch_size, 4, hidden_size)
