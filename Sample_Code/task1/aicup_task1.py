@@ -613,10 +613,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 ### Helper functions for scoring
-
+threshold=0.4
 class F1():
     def __init__(self):
-        self.threshold = 0.5
+        self.threshold = threshold
         self.n_precision = 0
         self.n_recall = 0
         self.n_corrects = 0
@@ -786,7 +786,7 @@ trange = tqdm(enumerate(dataloader), total=len(dataloader), desc='Predict')
 prediction = []
 for i, (x, y, sent_len) in trange:
     o_labels = model(x.to(device))
-    o_labels = o_labels>0.5
+    o_labels = o_labels>threshold
     for idx, o_label in enumerate(o_labels):
         prediction.append(o_label[:sent_len[idx]].to('cpu'))
 prediction = torch.cat(prediction).detach().numpy().astype(int)
