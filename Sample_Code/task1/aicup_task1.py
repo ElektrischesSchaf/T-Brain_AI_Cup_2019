@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# best_score=  0.6780959678191745 , best_epoch=  49
+# without num_layer, threshold=0.3, Best F1 score  [0.6933665008291874, 55]
 
 
 import pandas as pd
