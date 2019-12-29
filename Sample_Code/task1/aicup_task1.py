@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 # without num_layer, threshold=0.3, Best F1 score  [0.6933665008291874, 55]
-
+# with num_layer=2, [0.6959298992711491, 44]
 
 import pandas as pd
 import numpy as np
@@ -69,10 +69,10 @@ def write_config(filename, with_time=False):
 ### Hyperparameters tuning
 ### Run this cell for renewing the hyperparameters
 
-embedding_dim = 300
+embedding_dim = 100
 hidden_dim = 512
 learning_rate = 1e-5
-max_epoch = 65
+max_epoch = 50
 batch_size = 16
 num_layers = 2
 # write the hyperparameters into config.ini
@@ -301,7 +301,7 @@ if not os.path.exists('glove'):
 ### Parsing the GloVe word-embeddings file
 # Parse the unzipped file (a .txt file) to build an index that maps words (as strings) to their vector representation (as number vectors)
 
-wordvector_path = 'glove/glove.6B.300d.txt'
+wordvector_path = 'glove/glove.6B.100d.txt'
 embeddings_index = {}
 f = open(wordvector_path)
 for line in f:
@@ -779,7 +779,7 @@ _run_epoch(1, 'valid')
 
 # start testing
 dataloader = DataLoader(dataset=testData,
-                            batch_size=64,
+                            batch_size=batch_size,
                             shuffle=False,
                             collate_fn=testData.collate_fn,
                             num_workers=8)
