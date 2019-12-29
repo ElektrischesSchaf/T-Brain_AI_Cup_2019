@@ -70,10 +70,10 @@ def write_config(filename, with_time=False):
 ### Hyperparameters tuning
 ### Run this cell for renewing the hyperparameters
 
-embedding_dim = 100
+embedding_dim = 300
 hidden_dim = 512
 learning_rate = 1e-4
-max_epoch = 10
+max_epoch = 50
 batch_size = 16
 
 # write the hyperparameters into config.ini
@@ -109,6 +109,11 @@ dataset.drop('Created Date',axis=1, inplace=True)
 dataset.drop('Authors',axis=1,inplace=True)
 dataset['Abstract'] = dataset['Abstract'].str.lower()
 #dataset['Task 1'] = dataset['Task 1'].str.lower()
+from nltk.stem import WordNetLemmatizer 
+lemmatizer = WordNetLemmatizer()
+
+for i in range(len(dataset['Abstract'])):
+    dataset['Abstract'][i] = lemmatizer.lemmatize(dataset['Abstract'][i])
 
 #for i in range(len(dataset['Abstract'])):
 #    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
@@ -141,6 +146,9 @@ dataset.drop('Categories',axis=1,inplace=True)
 dataset.drop('Created Date',axis=1, inplace=True)
 dataset.drop('Authors',axis=1,inplace=True)
 dataset['Abstract'] = dataset['Abstract'].str.lower()
+
+for i in range(len(dataset['Abstract'])):
+    dataset['Abstract'][i] = lemmatizer.lemmatize(dataset['Abstract'][i])
 
 #for i in range(len(dataset['Abstract'])):
 #    dataset['Abstract'][i] = remove_stopwords(dataset['Abstract'][i])
@@ -294,7 +302,7 @@ if not os.path.exists('glove'):
 ### Parsing the GloVe word-embeddings file
 # Parse the unzipped file (a .txt file) to build an index that maps words (as strings) to their vector representation (as number vectors)
 
-wordvector_path = 'glove/glove.6B.100d.txt'
+wordvector_path = 'glove/glove.6B.300d.txt'
 embeddings_index = {}
 f = open(wordvector_path)
 for line in f:

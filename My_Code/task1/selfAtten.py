@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+# Best F1 score  [0.5936898807233552, 8]
 
 
 import pandas as pd
