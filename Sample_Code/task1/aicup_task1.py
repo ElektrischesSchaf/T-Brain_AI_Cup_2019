@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# best_score=  0.6780959678191745 , best_epoch=  12
+# best_score=  0.6780959678191745 , best_epoch=  49
 
 
 import pandas as pd
@@ -72,7 +72,7 @@ def write_config(filename, with_time=False):
 embedding_dim = 300
 hidden_dim = 512
 learning_rate = 1e-5
-max_epoch = 50
+max_epoch = 65
 batch_size = 16
 
 # write the hyperparameters into config.ini
@@ -613,7 +613,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 ### Helper functions for scoring
-threshold=0.4
+threshold=0.3
 class F1():
     def __init__(self):
         self.threshold = threshold
