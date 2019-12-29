@@ -71,7 +71,7 @@ def write_config(filename, with_time=False):
 
 embedding_dim = 100
 hidden_dim = 512
-learning_rate = 1e-4
+learning_rate = 1e-5
 max_epoch = 50
 batch_size = 16
 num_layers = 2
@@ -130,8 +130,8 @@ dataset.head()
 # set test_size=0.1 for validation split
 trainset, validset = train_test_split(dataset, test_size=0.1, random_state=42)
 
-trainset.to_csv(os.path.join(CWD,'data/trainset.csv'),index=False)
-validset.to_csv(os.path.join(CWD,'data/validset.csv'),index=False)
+#trainset.to_csv(os.path.join(CWD,'data/trainset.csv'),index=False)
+#validset.to_csv(os.path.join(CWD,'data/validset.csv'),index=False)
 
 
 # In[ ]:
@@ -738,7 +738,7 @@ for epoch in range(max_epoch):
 # Plot the training results 
 with open(os.path.join(CWD,'model_sample_code/history.json'), 'r') as f:
     history = json.loads(f.read())
-    
+'''
 train_loss = [l['loss'] for l in history['train']]
 valid_loss = [l['loss'] for l in history['valid']]
 train_f1 = [l['f1'] for l in history['train']]
@@ -777,6 +777,7 @@ model.train(False)
 # double ckeck the best_model_score
 _run_epoch(1, 'valid')
 
+'''
 # start testing
 dataloader = DataLoader(dataset=testData,
                             batch_size=batch_size,
