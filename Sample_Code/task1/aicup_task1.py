@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-# In[ ]:
+# best_score=  0.6780959678191745 , best_epoch=  12
 
 
 import pandas as pd
