@@ -74,7 +74,7 @@ def write_config(filename, with_time=False):
 
 embedding_dim = 300
 hidden_dim = 1000
-learning_rate = 2e-5
+learning_rate = 1e-5
 max_epoch = 50
 batch_size = 15
 
@@ -558,7 +558,7 @@ class LSTMClassifier(nn.Module):
         output, (final_hidden_state, final_cell_state) = self.lstm(input, (h_0, c_0))
 
         x = torch.relu(self.l1(final_hidden_state[-1]))
-        
+
         final_output = self.label(x) # final_hidden_state.size() = (1, batch_size, hidden_size) & final_output.size() = (batch_size, output_size)
 
         final_output=final_output.unsqueeze(1)

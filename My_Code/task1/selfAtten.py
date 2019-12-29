@@ -74,7 +74,7 @@ def write_config(filename, with_time=False):
 
 embedding_dim = 300
 hidden_dim = 500
-learning_rate = 1e-4
+learning_rate = 1e-5
 max_epoch = 10
 batch_size = 15
 

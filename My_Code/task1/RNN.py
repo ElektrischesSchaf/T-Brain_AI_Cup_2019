@@ -74,7 +74,7 @@ def write_config(filename, with_time=False):
 
 embedding_dim = 300
 hidden_dim = 1000
-learning_rate = 2e-5
+learning_rate = 1e-5
 max_epoch = 50
 batch_size = 15
 
@@ -549,7 +549,7 @@ class RNN(nn.Module):
         # h_n.size() = (batch_size, 4*hidden_size)
 
         h_n=torch.relu(self.l1(h_n))
-        
+
         logits = self.label(h_n) # logits.size() = (batch_size, output_size)
 
         logits=logits.unsqueeze(1)
