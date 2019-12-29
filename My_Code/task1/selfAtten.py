@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Crack AbstractDataset and make adjustment by a seperate_dict function
-# Re-write CNN model
-# In[ ]:
+
 
 
 import pandas as pd

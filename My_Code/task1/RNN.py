@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Crack AbstractDataset and make adjustment by a seperate_dict function
-# Re-write CNN model
-# In[ ]:
+# Best F1 score  [0.6037416405654786, 8]
 
 
 import pandas as pd
@@ -564,7 +562,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 ### Helper functions for scoring
-threshold=0.3 # 0.3, 60%, epoch 12. 
+threshold=0.3
 class F1():
     def __init__(self):
         self.threshold = threshold
