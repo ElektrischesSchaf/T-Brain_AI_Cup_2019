@@ -21,3 +21,11 @@ Sample_Code/task2/*.pkl
 *.DS_Store
 cache/
 runs/
+
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.pdf
+*.gz
