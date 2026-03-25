@@ -1,3 +1,4 @@
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0004--1854--4003-A6CE39?logo=orcid&logoColor=white)](https://orcid.org/0009-0004-1854-4003)
 ### [教育部全國大專校院人工智慧競賽(AI CUP 2019)-人工智慧論文機器閱讀競賽之論文標註](https://tbrain.trendmicro.com.tw/Competitions/Details/8)
 * Topic 1 (Tagging of Thesis): The contestants will be provided theses with the topic of Computer Science sourced from arXiv. The contestants should use the provided materials to predict if a sentence in a thesis should be classified as the following categories: Background, Objectives, Methods, Results, Conclusions, or Others. Note that a sentence may have multiple classifications, e.g. a sentence may be classified as both Objective and Methods.
 * 競賽任務１(論文標註競賽)：我們將提供arXiv上電腦科學相關的論文摘要，參賽者需要使用這份資料預測論文中每個句子的分類（Background、Objectives、Methods、Results、Conclusions、Others）。需要注意的是句子可以有多個分類，例如：一個句子可以同時是Objective和Methods。  
